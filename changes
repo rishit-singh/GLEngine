@@ -1,0 +1,9 @@
+ToDo:
+	Replace Exception constructors' strcat() with strcpy()
+
+Fixed glGenBuffers() segmentation fault.
+Redeclared VertexArrayObject::SetBufferData(); 
+Redefined General::VertexVectorToFloatArray(); 
+Fixed Shader::Shader(String, String) initialization segmentation fault/
+Mesh::Mesh(std::vector<Vertex3Df>, Shader) completely implemented.  
+
