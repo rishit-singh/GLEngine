@@ -13,7 +13,9 @@ int main()
 { 
 	if (!SetupGLFW())	// Sets GLFW up
 		return -1; 	
-		
+
+	SetWindowHints(4, 6); 
+
 	Window window = Window("GLEngine App", Point2D(1920, 1080), Color(0.2, 0.3, 0.3, 1));
 
 	glfwMakeContextCurrent(window.GLWindow); 
@@ -35,8 +37,6 @@ int main()
 	GLEObject* Object = new GLEObject(vertexVector, Shader(VertexShaderString, FragmentShaderString, true)); 
 	
 	Renderer::GLLoop(window, Object);	
-	
-
 
 	glfwTerminate();
 
