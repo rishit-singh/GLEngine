@@ -23,7 +23,7 @@ namespace GLEngine
 		GLFWwindow* GLWindow;	//	GLFWwindow pointer 		
 
 		static void FrameBufferSizeCallBack(GLFWwindow* window, int height, int width);	// GLFW FrameBufferSizeCallBack function
-
+	
 		void Close();	//	Closes the current window instance 
 		void ProcessInput(); //	Processes input events
 

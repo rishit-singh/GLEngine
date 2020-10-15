@@ -14,7 +14,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${SHADERS})
 
 # OpenGL
 find_package(OpenGL REQUIRED)
-if(OpenGL_FOUND)
+if(OpenGL_FOUND)    
     message(STATUS "OpenGL found, including and linking")
     include_directories(${OPENGL_INCLUDE_DIR})
     link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARY})

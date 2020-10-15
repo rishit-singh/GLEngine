@@ -17,7 +17,7 @@ int main()
 	Window window = Window("GLEngine App", Point2D(1920, 1080), Color(0.2, 0.3, 0.3, 1));
 
 	glfwMakeContextCurrent(window.GLWindow); 
-	glfwSetFramebufferSizeCallback(window.GLWindow, window.FrameBufferSizeCallBack); 
+	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
 	
 	std::cout << "GLEW Status: " << SetupGLEW();     
 
@@ -35,6 +35,8 @@ int main()
 	GLEObject* Object = new GLEObject(vertexVector, Shader(VertexShaderString, FragmentShaderString, true)); 
 	
 	Renderer::GLLoop(window, Object);	
+	
+
 
 	glfwTerminate();
 
