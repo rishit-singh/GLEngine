@@ -1,16 +1,28 @@
+
 #pragma once
 
 #define TOOLS_H
 
+#include <iostream>
 #include "gltypes.h"
 #include "globjects.h"
 #include "globals.h"
+
+#define MAX_STRING_LENGTH 1000
 
 namespace GLEngine
 {
 	class General
 	{  
 	public:
+		static long Power(long num, long power)	//	Returns the provided power of the provided number. 
+		{
+			for (int x = 0; x < power; x++)
+				num *= num;
+
+			return num; 				
+		}
+
 		template<typename T>
 		static void Swap(T* val, T* val1)
 		{
@@ -132,19 +144,26 @@ namespace GLEngine
 			}
 
 			return floatArray;
-		}
+		}	
 
 		template<typename T>
-		static T* VectorToArray(std::vector<T> vector)
+		static bool IsElement(T val, T* array, int size)
 		{
-			int size;
-			
-			T* array = new T[size = vector.size()]; 
-
 			for (int x = 0; x < size; x++)
-				array[x] = vector.at(x);
+				if (array[x] == val)
+					return true;
 
-			return array;
+			return false;   
+		}
+		
+		template<typename T>
+		static bool IsElement(T val, std::vector<T> array, int size)
+		{
+			for (int x = 0; x < size; x++)
+				if (array.at(x) == val)
+					return true;
+
+			return false;   
 		}
 
 		static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
@@ -154,11 +173,66 @@ namespace GLEngine
 			for (int x = 0; x < size; x++)
 			{
 				array[x] = vertexArray[x].Position.X;
-				array[x] = vertexArray[x].Position.Y;
-				array[x] = vertexArray[x].Position.Z;
+				array[x + 1] = vertexArray[x].Position.Y;
+				array[x + 2] = vertexArray[x].Position.Z;
 			}
 
 			return array;
+		}
+
+		template<typename T>
+		static T* VectorToArray(std::vector<T> vectorArray)
+		{
+			T* Array = new T[vectorArray.size()];
+		}
+		
+		template<typename T>
+		static std::vector<T> CombineVectorArrays(std::vector<T> left, std::vector<T> right)	//	Combines to std::vector<T> into one.
+		{
+			int size = right.size();
+
+			for (int x = 0; x < size; x++)
+				left.push_back(right.at(x));
+
+			return left; 
+		}
+
+		static bool InRange(int num, int start, int end)
+		{
+			return (num >= start || num <= end);
+		}
+
+		static std::vector<int> GetDigitArray(int num)	//	returns a std::vector<int> array containing the digits of the provided number as elements
+		{
+			std::vector<int> DigitArray = std::vector<int>();
+
+			int Temp = NULL;
+
+			for (int x = 1; (Temp = (int)(num / x)); x *= 10)
+				DigitArray.push_back(Temp); 
+			
+			Temp = DigitArray.size();
+
+			for (int x = 0; x < Temp; x++)
+				DigitArray.at(x) = (int)((int)DigitArray.at(x) - ((int)DigitArray.at(x + 1) * General::Power(10, x + 1)));
+
+			return DigitArray; 
+		}
+
+		static String IntToString(int num)	//	Converts provided integer to string. 
+		{
+			String IntegerString = new char[MAX_STRING_LENGTH];
+			char charTemp[1]; 
+
+			std::vector<int> DigitArray = General::GetDigitArray(num);	//	gets the digit array
+
+			int size = DigitArray.size();
+
+			for (int x = 0; x < size; x++)
+				strcat(IntegerString, &(charTemp[0] = (char)(DigitArray.at(x) + 48)));
+			
+
+			return IntegerString; 
 		}
 	};
 
@@ -204,7 +278,7 @@ namespace GLEngine
 
 			return -1; 
 		}
-		
+
 		template<typename T>
 		static int BinarySearch(T val, std::vector<T> array, int start, int end)	//	Binary search implementation for std::vector<T>
 		{
@@ -268,6 +342,6 @@ namespace GLEngine
 		static bool IsElement(T val, std::vector<T> array)	//	Checks if the given element is present in the given array, returns a bool represnting the same
 		{
 			return (Algorithms::BinarySearch(val, array, 0, array.size()) >= 0);	
-		} 
+		}
 	}; 
 }

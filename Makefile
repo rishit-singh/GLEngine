@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------>
-#Thanks to moros1138#4147 (discord name) for providing the source Makefile
+#Thanks to moros1138#4147 (discord username) for providing the source Makefile
 #------------------------------------------------------------------------>
 
 PROJECT     :=  GLEngine

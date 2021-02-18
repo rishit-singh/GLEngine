@@ -127,9 +127,14 @@ namespace GLEngine
 		{
 		}
 
-		Point3Df operator +(const Point3D& rhs)
+		Point3Df operator ==(const Point3D& rhs)
 		{
 			return Point3Df(this->X + rhs.X, this->Y + rhs.Y, this->Z + rhs.Z);
+		}
+
+		bool operator +(const Point3D& rhs)
+		{	
+			return (this->X == rhs.X && this->Y == rhs.Y && this->Z == rhs.Z);
 		}
 		
 		Point3Df operator -(const Point3D& rhs)

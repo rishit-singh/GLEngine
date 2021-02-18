@@ -6,15 +6,128 @@ GLenum* GLEngine::ShaderTypeGLenums = new GLenum[2] {
 	GL_FRAGMENT_SHADER
 };  
 
+bool  GLEngine::Shader::Enable()
+{
+	if (this->Verify())	
+	{	
+		glUseProgram(this->ShaderProgramID);
+		
+		return true; 
+	}
+	return false; 
+}
+
 bool GLEngine::Shader::Verify()
 {
 	bool Validity = true;	
-	
+	 
 	for (int x = 0; x < 2; x++)	
-		if (this->ShaderIDs[x] == NULL || this->ShaderProgramStrings.at(x) == nullptr)	
+		if (this->ShaderIDs[x] <= 0 || this->ShaderProgramStrings.at(x) == nullptr)	
 			Validity = !Validity;
 
-	return Validity; 
+	return Validity;
+}
+
+int GLEngine::Shader::GetUniformLocation(char* uniformName, unsigned int shaderProgramID)
+{
+	int location; 
+
+	if (this->UniformHash[uniformName] != NULL)
+		return this->UniformHash[uniformName];
+
+	location = glGetUniformLocation(shaderProgramID, uniformName); 
+
+	return location;
+}
+
+// template<typename T>
+// bool GLEngine::Shader::SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
+// {
+// 	switch (glType)
+// 	{
+// 		case GL_FLOAT:
+// 			switch (size)
+// 			{
+// 				case 1:
+// 					glUniform1f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
+					
+// 					return true; 
+
+// 					break; 
+
+// 				case 2:
+// 					glUniform2f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
+
+// 					return true; 
+
+// 					break; 
+
+// 				case 3:
+// 					glUniform3f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
+
+// 					return true; 
+
+// 					break; 
+
+// 				case 4:
+// 					glUniform4f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
+
+// 					return true; 
+
+// 					break;
+
+// 				default:
+// 					std::cout << "\n Invalid uniform type size.";
+
+// 					return false; 
+// 			}
+			
+// 		case GL_INT:
+// 			switch (size)
+// 			{
+// 				case 1:
+// 					glUniform1i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
+
+// 					return true;
+					
+// 					break; 
+
+
+// 				case 2:
+// 					glUniform2i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
+
+// 					return true;
+					
+// 					break; 
+
+// 				case 3:
+// 					glUniform3i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
+
+// 					return true;
+					
+// 					break; 
+
+// 				case 4:
+// 					glUniform4i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
+
+// 					return true;
+
+// 					break;
+
+// 				default:
+// 					std::cout << "\n Invalid uniform type size.";
+
+// 					return false;
+// 			}
+// 	}
+
+// 	return false; 
+// }
+
+void GLEngine::Shader::DeleteShaders()
+{
+	for (int x = 0; x < 2; x++)
+		glDeleteShader(this->ShaderIDs[x]); 
 }
 
 unsigned int* GLEngine::Shader::Compile()
@@ -30,20 +143,20 @@ unsigned int* GLEngine::Shader::Compile()
 		return nullptr;
 	}
 
-	unsigned int* Shaders = new unsigned int[2] {
-		glCreateShader(GL_VERTEX_SHADER),
-		glCreateShader(GL_FRAGMENT_SHADER)
-	}; 
+	// unsigned int* Shaders = new unsigned int[2] {
+	// 	glCreateShader(GL_VERTEX_SHADER),
+	// 	glCreateShader(GL_FRAGMENT_SHADER)
+	// }; 
 
 	for (int x = 0; x < 2; x++)
 	{
-		glShaderSource(Shaders[x], 1, &this->ShaderProgramStrings.at(x), NULL);
-		glCompileShader(Shaders[x]);
+		glShaderSource(this->ShaderIDs[x], 1, &this->ShaderProgramStrings.at(x), NULL);
+		glCompileShader(this->ShaderIDs[x]);
 
-		this->CheckErrors(Shaders[x], GL_COMPILE_STATUS);
+		this->CheckErrors(ShaderIDs[x], GL_COMPILE_STATUS);
 	}
 
-	return (this->ShaderIDs = Shaders);
+	return (this->ShaderIDs);
 }
 
 unsigned int GLEngine::Shader::Link()

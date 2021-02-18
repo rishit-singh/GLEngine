@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 namespace DebugTools
 {
@@ -41,10 +42,25 @@ namespace DebugTools
 		}
 		
 		template<typename T>
+		void Log(char* message, T value)	// Outputs the provided value of type T to the console 
+		{
+			std::cout << "\nDebug " << this->LogCount++ << ": " << message << ": " << value << "\n\n";
+		}
+		
+		template<typename T>
 		void Log(T* value, unsigned int size)	// Outputs the values of elements of the provided array of type T to the console
 		{
 			for (int x = 0; x < size; x++)
-				std::cout << "\nDebug " << this->LogCount++ << ": " << value << '\n';
+				std::cout << "\nDebug " << this->LogCount++ << ": " << value[x] << '\n';
+		}
+
+		template<typename T>
+		void Log(std::vector<T> vectorArray)	// Outputs the values of elements of the provided array of type T to the console
+		{
+			int size = vectorArray.size();
+
+			for (int x = 0; x < size; x++)
+				std::cout << "\nDebug " << this->LogCount++ << ": " << vectorArray.at(x) << '\n';
 		}
 
 	public:

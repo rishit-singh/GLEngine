@@ -16,29 +16,57 @@ int main()
 
 	SetWindowHints(4, 6); 
 
-	Window window = Window("GLEngine App", Point2D(1920, 1080), Color(0.2, 0.3, 0.3, 1));
+	Window window = Window("GLEngine App", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5));
 
-	glfwMakeContextCurrent(window.GLWindow); 
+	// glfwMakeContextCurrent(window.GLWindow); 
+
+	SetCurrentContext(window.GLWindow); 
 	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
 	
 	std::cout << "GLEW Status: " << SetupGLEW();     
 
-	std::vector<Vertex3Df> vertexVector = {
-		Vertex3Df(Point3Df(-0.2, -0.2, 0.0), Color()),	// Left
-		Vertex3Df(Point3Df(0.2, -0.2, 0.0), Color()),	// Right
-		Vertex3Df(Point3Df(0.0, 0.2	, 0.0), Color())	// Top
-	};
 
-	char* VertexShaderString = FileIO::Read("/home/rishit/source/repos/GLEngine/shaders/vertexshader.vs"),
-	 *FragmentShaderString = FileIO::Read("/home/rishit/source/repos/GLEngine/shaders/fragmentshader.fs"); 
-
-	// Mesh* mesh = new Mesh(vertexVector, Shader(VertexShaderString, FragmentShaderString, true)); 
-
-	GLEObject* Object = new GLEObject(vertexVector, Shader(VertexShaderString, FragmentShaderString, true)); 
+	char* VertexShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/vertexshader.vert"),
+	 *FragmentShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/fragmentshader.frag"); 
 	
-	Renderer::GLLoop(window, Object);	
+	Shader shader = Shader(VertexShaderString, FragmentShaderString, true); 
+
+	VertexArrayObject* VAO = new VertexArrayObject({
+			-0.2f, -0.2f, 0.0f, 
+			-0.2f, 0.2f, 0.0f, 
+			0.2f, 0.2f, 0.0f,
+			0.2f, -0.2f, 0.0f 
+		},
+
+		{
+			0, 1, 2,
+			2, 3, 0 
+		}
+	);
+
+	VAO->Unbind();
+
+	unsigned int Location = glGetUniformLocation(shader.ShaderProgramID, "uFragmentColor");  
+
+	float IncrementValue = 0.05f, ColorValue = 0.0f;	 
+
+	while (!glfwWindowShouldClose(window.GLWindow))
+	{
+		window.ProcessInput(); 
+	 	
+		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);
+		glClear(GL_COLOR_BUFFER_BIT);	
+
+		Renderer::Render(VAO, &shader);
+
+		glfwSwapBuffers(window.GLWindow);
+		glfwPollEvents(); 
+	}
+
+	delete (&shader);
 
 	glfwTerminate();
 
+		
 	return 0; 
 }

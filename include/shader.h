@@ -4,20 +4,19 @@
 
 #include "globjects.h"
 #include "globals.h"
+#include <unordered_map> 
 
 namespace GLEngine
 {	
 	extern GLenum* ShaderTypeGLenums; 	// Stores GLenums of the respective Shader types
-	
+
 	class Shader
 	{
-	private:	
-		void DeleteShaders()	//	Deletes the created shaders
-		{
-			for (int x = 0; x < 2; x++)
-				glDeleteShader(this->ShaderIDs[x]); 
-		}
-	
+	private:
+		int GetUniformLocation(char*, unsigned int); 
+
+		void DeleteShaders();	//	Deletes the created shaders
+
 	public:
 		enum ShaderType
 		{
@@ -27,16 +26,109 @@ namespace GLEngine
 		
 		unsigned int ShaderProgramID; // Stores the final compiled shader program ID
 
-		unsigned int* ShaderIDs;	// Array to store the program IDs of the			
+		unsigned int* ShaderIDs;	// Array to store the program IDs of the		
 
 		std::vector<String> ShaderProgramStrings; // Array to store them shader program string
 
+		std::unordered_map<String, int> UniformHash; 	//	Hashtable storing all the shader uniform locations 
+
+		bool Enable();	//	Enbales the shader for rendering
 		bool Verify();	// Checks if the current instance of the Shader is eligible to get compiled and linked to the final shader program
 		void CheckErrors(unsigned int, GLenum); // Checks for compiling and linking errors
-		
+
 		unsigned int* Compile();	//	Compiles all the shaders at once if eligible
 		unsigned int Link();	//	Links the compiled shaders into one shader program						
 
+		// template<typename T>
+		// bool SetUniformValue(char*, unsigned int, T*, int); 	//	Gets the specified uniform location from the current linked shader program
+					
+		template<typename T>
+		bool SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
+		{
+			switch (glType)
+			{
+				case GL_FLOAT:
+					switch (size)
+					{
+						case 1:
+							glUniform1f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
+							
+							return true; 
+
+							break; 
+
+						case 2:
+							glUniform2f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
+
+							return true; 
+
+							break; 
+
+						case 3:
+							glUniform3f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
+
+							return true; 
+
+							break; 
+
+						case 4:
+							glUniform4f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
+
+							return true; 
+
+							break;
+
+						default:
+							std::cout << "\n Invalid uniform type size.";
+
+							return false; 
+					}
+
+					break;
+
+				case GL_INT:
+					switch (size)
+					{
+						case 1:
+							glUniform1i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
+
+							return true;
+							
+							break; 
+
+
+						case 2:
+							glUniform2i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
+
+							return true;
+							
+							break; 
+
+						case 3:
+							glUniform3i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
+
+							return true;
+							
+							break; 
+
+						case 4:
+							glUniform4i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
+
+							return true;
+
+							break;
+
+						default:
+							std::cout << "\n Invalid uniform type size.";
+
+							return false;
+					}
+
+					break; 
+			}
+
+			return false; 
+		}
 		Shader()
 		{	
 			this->ShaderProgramStrings = {
@@ -56,7 +148,7 @@ namespace GLEngine
 			strcpy(this->ShaderProgramStrings.at(1), fragmentShaderString); 
 
 			this->ShaderIDs = new unsigned int[2] {
-				glCreateShader(GL_VERTEX_SHADER), 
+				glCreateShader(GL_VERTEX_SHADER),		 
 				glCreateShader(GL_FRAGMENT_SHADER)
 			};
 		}	

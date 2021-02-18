@@ -1,5 +1,7 @@
 #include "exceptions.h"
 
+#include <signal.h>
+
 
 void GLEngine::GLException::LogExceptionMessage()
 {

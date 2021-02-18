@@ -35,11 +35,10 @@ GLEngine::Window::Window(String title, Point2D resolution, Color color = Color(0
 {
 	AllocatedWindows.push_back(this);
 
-
-	Debug->Log(color.R); 
-	Debug->Log(color.G); 
-	Debug->Log(color.B); 
-	Debug->Log(color.A); 	
+	// Debug->Log(color.R); 
+	// Debug->Log(color.G); 
+	// Debug->Log(color.B); 
+	// Debug->Log(color.A); 	
 }
 
 GLEngine::Window::Window(Point2D resolution, Color color) : Title(DefaultStringValues[(int)DefaultStringType::WindowTitleStrings]), Resolution(resolution), GLWindow(glfwCreateWindow(resolution.X, resolution.Y, this->Title, NULL, NULL)), BackgroundColor(Color(0, 0, 0, 0)), ID(AllocatedWindows.size())
@@ -59,8 +58,8 @@ GLEngine::Window::Window(bool active) : /*ID(WindowStack.size()),*/ Title(Defaul
 	if (this->GLWindow == nullptr)	//	Error check
 	{
 		std::cout << "\n Could not create the window. "; 
-				
-		glfwTerminate(); 
+
+		glfwTerminate(); 				
 	}	
 		
 	glViewport(0, 0, this->Resolution.X, this->Resolution.Y);
@@ -87,4 +86,10 @@ void GLEngine::Window::ProcessInput()
 {
 	if (glfwGetKey(this->GLWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		this->Close(); 
+		
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_W) == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_F) == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

@@ -4,6 +4,11 @@
 
 #include "Debug.h"
 
+#define ASSERT(x) if (!(x)) raise(SIGINT);
+#define GLCall(x) GLClearError();\
+    x;\
+    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+
 using namespace DebugTools;
 
 namespace GLEngine
