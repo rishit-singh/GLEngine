@@ -17,6 +17,13 @@ bool  GLEngine::Shader::Enable()
 	return false; 
 }
 
+bool GLEngine::Shader::Disable()
+{
+	glUseProgram(0); 
+
+	return false; 
+}
+
 bool GLEngine::Shader::Verify()
 {
 	bool Validity = true;	

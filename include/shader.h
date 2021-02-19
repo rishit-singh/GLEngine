@@ -32,7 +32,8 @@ namespace GLEngine
 
 		std::unordered_map<String, int> UniformHash; 	//	Hashtable storing all the shader uniform locations 
 
-		bool Enable();	//	Enbales the shader for rendering
+		bool Enable();	//	Enables the shader for rendering
+		bool Disable();	//	Disables the enabled shader 
 		bool Verify();	// Checks if the current instance of the Shader is eligible to get compiled and linked to the final shader program
 		void CheckErrors(unsigned int, GLenum); // Checks for compiling and linking errors
 
