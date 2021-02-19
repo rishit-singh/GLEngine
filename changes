@@ -1,4 +1,0 @@
-Added matrix.h for Matrix<T> and MatrixOperations classes. 
-Created VertexBuffer class ...
-Made buffer binding and data setting functions global.
-
