@@ -26,7 +26,7 @@ namespace GLEngine
 	};
 
 	extern void SetWindowHints(unsigned int, unsigned int);	//	Sets up the OpenGL version hint
-	extern void SetCurrentContext(GLFWwindow*);	//	Sets the provided instance of a GLFWwindow as the current context
+	extern void SetCurrentContext(Window);	//	Sets the provided instance of a GLFWwindow as the current context
 	extern bool SetupGLEW();	//	Sets up the GLEW library
 	extern bool SetupGLFW();	//	Sets up the GLFW library
 

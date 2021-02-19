@@ -62,9 +62,9 @@ void GLEngine::SetWindowHints(unsigned int major, unsigned int minor)
 	#endif
 } 
 
-void GLEngine::SetCurrentContext(GLFWwindow* window)
+void GLEngine::SetCurrentContext(Window window)
 {	
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window.GLWindow);
 }
 
 bool GLEngine::SetupGLEW()
