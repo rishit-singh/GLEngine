@@ -1,12 +1,13 @@
+#include <stdlib.h>
 #include "shader.h"
 #include "exceptions.h"
 
 GLenum* GLEngine::ShaderTypeGLenums = new GLenum[2] {
 	GL_VERTEX_SHADER, 
 	GL_FRAGMENT_SHADER
-};  
+};	
 
-bool  GLEngine::Shader::Enable()
+bool GLEngine::Shader::Enable()
 {
 	if (this->Verify())	
 	{	
@@ -14,6 +15,8 @@ bool  GLEngine::Shader::Enable()
 		
 		return true; 
 	}
+
+
 	return false; 
 }
 
@@ -44,92 +47,21 @@ int GLEngine::Shader::GetUniformLocation(char* uniformName, unsigned int shaderP
 
 	location = glGetUniformLocation(shaderProgramID, uniformName); 
 
+	// Debug->Log<bool>("Uniform location null:", location == NULL);
+
+	if (location == -1)
+	{
+		char* message = strcat(strcat(strcat((char*)malloc(sizeof(char) * 256), "Uniform "), uniformName), " not found.");
+
+		Debug->Log(message);
+
+		free(message);
+
+		return -1;
+	}
+
 	return location;
 }
-
-// template<typename T>
-// bool GLEngine::Shader::SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
-// {
-// 	switch (glType)
-// 	{
-// 		case GL_FLOAT:
-// 			switch (size)
-// 			{
-// 				case 1:
-// 					glUniform1f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
-					
-// 					return true; 
-
-// 					break; 
-
-// 				case 2:
-// 					glUniform2f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
-
-// 					return true; 
-
-// 					break; 
-
-// 				case 3:
-// 					glUniform3f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
-
-// 					return true; 
-
-// 					break; 
-
-// 				case 4:
-// 					glUniform4f(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
-
-// 					return true; 
-
-// 					break;
-
-// 				default:
-// 					std::cout << "\n Invalid uniform type size.";
-
-// 					return false; 
-// 			}
-			
-// 		case GL_INT:
-// 			switch (size)
-// 			{
-// 				case 1:
-// 					glUniform1i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
-
-// 					return true;
-					
-// 					break; 
-
-
-// 				case 2:
-// 					glUniform2i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
-
-// 					return true;
-					
-// 					break; 
-
-// 				case 3:
-// 					glUniform3i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
-
-// 					return true;
-					
-// 					break; 
-
-// 				case 4:
-// 					glUniform4i(GLEngine::Shader::GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
-
-// 					return true;
-
-// 					break;
-
-// 				default:
-// 					std::cout << "\n Invalid uniform type size.";
-
-// 					return false;
-// 			}
-// 	}
-
-// 	return false; 
-// }
 
 void GLEngine::Shader::DeleteShaders()
 {
@@ -149,11 +81,6 @@ unsigned int* GLEngine::Shader::Compile()
 		e->LogExceptionMessage();		
 		return nullptr;
 	}
-
-	// unsigned int* Shaders = new unsigned int[2] {
-	// 	glCreateShader(GL_VERTEX_SHADER),
-	// 	glCreateShader(GL_FRAGMENT_SHADER)
-	// }; 
 
 	for (int x = 0; x < 2; x++)
 	{

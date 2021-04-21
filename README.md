@@ -8,5 +8,6 @@ General purpose graphics engine based on OpenGL
 
 ### Dependencies
 
-* OpenGL 4.5+
+* glew
+* glfw
 * stb_image.h (provided in the `include/external`directory)

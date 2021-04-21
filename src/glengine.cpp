@@ -23,31 +23,77 @@ void GLEngine::VertexArrayObject::DeleteBufferObjects()	//	Deletes all the buffe
 		glDeleteBuffers(1, &this->VertexBufferObjects.at(x).IndexBuffer); 
 	}
 }
-bool GLEngine::VertexArrayObject::AddVertexBufferObject(GLEngine::VertexBufferObject vertexBufferObject)
+
+GLEngine::VertexBufferObject GLEngine::VertexArrayObject::AddVertexBufferObject(GLEngine::VertexBufferObject vertexBufferObject)
 {
 	if (!vertexBufferObject.IsValid())
 	{
 		Debug->Log("Invalid VertexBufferObject provided.");
 
-		return  false; 
+		return VertexBufferObject(); 
 	}
 
 	this->VertexBufferObjects.push_back(vertexBufferObject);
 
+	return this->VertexBufferObjects.back(); 
+}
+
+bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeObject vertexAttributeObject, GLEngine::VertexBufferObject vertexBufferObject)
+{
+	int sizeTemp = 0, offsetTemp = 0; 
+
+	if (!vertexAttributeObject.IsValid())
+	{
+		Debug->Log("Invalid VertexBufferObject provided.");
+
+		return false; 
+	}
+
+	this->VertexAttributes.push_back(vertexAttributeObject);
+
+	sizeTemp = this->VertexAttributes.size(); 
+
+	this->BufferLayoutStride += vertexAttributeObject.Stride * sizeof(float); 
+
+	for (int x = 0; x < sizeTemp; x++)
+	{
+		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID		);
+		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
+		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, this->BufferLayoutStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
+
+		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
+	}
+	
 	return true; 
 }
 
 bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeObject vertexAttributeObject)
 {
+	int sizeTemp = 0, offsetTemp = 0; 
+
 	if (!vertexAttributeObject.IsValid())
 	{
 		Debug->Log("Invalid VertexBufferObject provided.");
 
-		return  false; 
+		return false; 
 	}
 
 	this->VertexAttributes.push_back(vertexAttributeObject);
 
+	sizeTemp = this->VertexAttributes.size(); 
+
+	this->BufferLayoutStride += vertexAttributeObject.Stride * sizeof(float); 
+
+	for (int x = 0; x < sizeTemp; x++)
+	{
+		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
+
+		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
+		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, this->BufferLayoutStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
+
+		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
+	}
+	
 	return true; 
 }
 
@@ -57,7 +103,7 @@ void GLEngine::SetWindowHints(unsigned int major, unsigned int minor)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	#ifdef __APPLE__
+	#ifdef __APPLE__	//	macOS support
     	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	#endif
 } 
@@ -78,7 +124,7 @@ bool GLEngine::SetupGLEW()
 	}
 	catch (const LibraryInitializationError& e)
 	{	
-		std::cout << "\nGLEW  initialization error..";
+		std::cout << "\nGLEW initialization error.";
 
 		return false; 
 	}
@@ -122,22 +168,31 @@ void GLEngine::Renderer::Render(GLEngine::Mesh* mesh)
 	glDrawArrays(GL_TRIANGLES, 0, 3); 
 }
 
+float colorValue = 1.0f;
+
+float i = 0.1f;	// increament value	
+
 void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader)
 {
 	shader->Enable();
 
-	vertexArrayObject->Bind(); 
+	if (colorValue <= 0.0f || colorValue >= 1.0f)
+		i = -i;
 
-	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer); 
+	shader->SetUniformValue<float>("uFragmentColor", GL_FLOAT, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f }, 4); 
+	vertexArrayObject->Bind(); 	
+	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
 	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+
+	colorValue += i; 
 }
 
 void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
 {
 	glUseProgram(object->ObjectMesh->MeshShader.ShaderProgramID);
-	// mesh->VAO.Bind(VertexArrayObject::VertexArray, 0);s
-	glBindVertexArray(object->ObjectMesh->VAO.VertexAttributes.at(object->ObjectMesh->VAO.VertexAttributes.size() - 1).ID); 
+	// mesh->VAO.Bind(VertexArrayObject::VertexArray, 0);
+	glBindVertexArray(object->ObjectMesh->VAO.VertexAttributes.at(object->ObjectMesh->VAO.VertexAttributes.size() - 1).ID); 	
 	object->VAO->VertexBufferObjects.at(object->VAO->VertexBufferObjects.size() - 1).Bind(GLEngine::IndexBuffer); 
 	
 	glDrawArrays(GL_TRIANGLES, 0, 3); // temporary rendering type
@@ -162,6 +217,15 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
 // 	return true;
 // }
 
+void GLEngine::SetBufferData(unsigned int bufferID, float* vertexArray, unsigned int arraySize)
+{	
+	// Bind(VertexBuffer, bufferID); 	//	Binds the provided vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);	
+	glBufferData(GL_ARRAY_BUFFER, arraySize * sizeof(float), vertexArray, GL_STATIC_DRAW);	//	Adds data to the buffer
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);	
+	// Bind(VertexBuffer, 0); 
+}
+
 bool GLEngine::Renderer::GLLoop(GLEngine::Window window, GLEObject* object)
 {
 	while (!glfwWindowShouldClose(window.GLWindow))
@@ -179,8 +243,6 @@ bool GLEngine::Renderer::GLLoop(GLEngine::Window window, GLEObject* object)
 
 	return true;
 }
-
-
 
 // void GLEngine::Mesh::SetVAO()
 // {
@@ -318,7 +380,7 @@ bool GLEngine::VertexBufferObject::UnBind(GLEngine::ObjectType objectType)
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			return true; 
-
+			
 			break; 	
 
 		default:
@@ -330,47 +392,6 @@ bool GLEngine::VertexBufferObject::UnBind(GLEngine::ObjectType objectType)
 	return false; 
 }
 
-template<typename T>
-bool GLEngine::SetBufferData(unsigned int bufferID, T* bufferData, int size, ObjectType objectType)	
-{	
-	// if (!Bind(objectType, bufferID))	// 	checks the oject type and bind the buffer if the type is valid
-	// 	return false;
-
-	switch (objectType)
-	{
-		case GLEngine::VertexBuffer:
-			glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-			glBufferData(GL_ARRAY_BUFFER, size * sizeof(T), bufferData, GL_STATIC_DRAW);
-
-			return true;
-
-		case GLEngine::IndexBuffer:
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(T), bufferData, GL_STATIC_DRAW);
-
-			return true;
-
-		default:
-			return false;
-	}
-
-	// glBindBuffer(VertexArrayObject::ObjectTypes[(int)objectType], bufferID);
-
-	
-	// Bind(VertexBuffer, 0); 
-	
-	return false;		
-}
-
-void GLEngine::SetBufferData(unsigned int bufferID, float* vertexArray, unsigned int arraySize)
-{	
-	// Bind(VertexBuffer, bufferID); 	//	Binds the provided vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);	
-	glBufferData(GL_ARRAY_BUFFER, arraySize * sizeof(float), vertexArray, GL_STATIC_DRAW);	//	Adds data to the buffer
-	// glBindBuffer(GL_ARRAY_BUFFER, 0);	
-
-	// Bind(VertexBuffer, 0); 
-}
 
 void GLEngine::VertexArrayObject::SetVertexAttributePointer(unsigned int id, unsigned int size)	// todo: make argumentes more specific.
 {

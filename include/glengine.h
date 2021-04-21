@@ -17,7 +17,7 @@
 using namespace DebugTools; 
 
 namespace GLEngine
-{  
+{
 	enum ObjectType
 	{
 		VertexArray, 
@@ -36,10 +36,39 @@ namespace GLEngine
 	
 	extern unsigned int GetByteSize(unsigned int);	//	Returns the byte size of the provided GL type
 
-	template<typename T>
-	extern bool SetBufferData(unsigned int, T*, int, ObjectType);	//	Sets the provided array to the provided type of buffer
 
-	struct 	VertexAttributeObject	//	Stores Vertex  Attributes for the buffer layout
+	template<typename T>
+	bool SetBufferData(unsigned int bufferID, T* bufferData, int size, ObjectType objectType)	
+	{	
+		// if (!Bind(objectType, bufferID))	// 	checks the oject type and bind the buffer if the type is valid
+		// 	return false;
+
+		switch (objectType)
+		{
+			case GLEngine::VertexBuffer:
+				glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+				glBufferData(GL_ARRAY_BUFFER, size * sizeof(T), bufferData, GL_STATIC_DRAW);
+
+				return true;
+
+			case GLEngine::IndexBuffer:
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(T), bufferData, GL_STATIC_DRAW);
+
+				return true;
+
+			default:
+				return false;
+		}
+
+		// glBindBuffer(VertexArrayObject::ObjectTypes[(int)objectType], bufferID);
+
+
+		// Bind(VertexBuffer, 0); 
+
+		return false;		
+	}
+	struct VertexAttributeObject	//	Stores Vertex  Attributes for the buffer layout
 	{
 		unsigned int ID, 
 		Stride, 
@@ -70,7 +99,7 @@ namespace GLEngine
 		unsigned int VertexBuffer,
 		IndexBuffer, 
 		VertexArraySize,
-		IndexArraySize;
+		IndexArraySize;		
 
 		bool IsValid();	//	Checks if an instance of the VertexBufferObjecet is valid for binding and rendering
 		bool Bind(ObjectType);	//	Bind the specified buffer
@@ -85,7 +114,7 @@ namespace GLEngine
 			//	Buffer generation
 			glGenBuffers(1, &this->VertexBuffer);
 			glGenBuffers(1, &this->IndexBuffer);
-
+ 
 			// Sets the data to the buffer
 			SetBufferData<float>(this->VertexBuffer, this->VertexArray, this->VertexArraySize, ObjectType::VertexBuffer);
 			SetBufferData<unsigned int>(this->IndexBuffer, this->IndexArray, this->IndexArraySize, ObjectType::IndexBuffer);			
@@ -115,8 +144,9 @@ namespace GLEngine
 
 		static GLenum* ObjectTypes; 
 
-		bool AddVertexBufferObject(VertexBufferObject);	//	Creates a VertexBufferObejct and adds it to the VAO
+		VertexBufferObject AddVertexBufferObject(VertexBufferObject);	//	Creates a VertexBufferObejct and adds it to the VAO
 		bool AddVertexAttribute(VertexAttributeObject);	//	Creates a VertexBufferObejct and adds it to the VAO
+		bool AddVertexAttribute(VertexAttributeObject, VertexBufferObject);	//	Creates a VertexBufferObejct and adds it to the VAO
 		void SetVertexAttributePointer(unsigned int);	//	Sets the Vertex Attribute pointer for the latest object
 		void SetVertexAttributePointer(unsigned int, unsigned int);	//	Sets the Vertex Attribute pointer for the provided object id
 
@@ -126,71 +156,58 @@ namespace GLEngine
 
 		bool IsBound;	// Represents the binding status 
 
-		unsigned int ID; 
+		unsigned int ID,	// VAO ID wof the current instance
+		BufferLayoutStride;	//	Strides of all the vertex atrributes in the bufferlayout combined
 	
-		VertexArrayObject() : VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
+		VertexArrayObject() : ID(-1), BufferLayoutStride(NULL), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
 		{
 			// this->CreateBufferObject(); 
 		}
 
-		VertexArrayObject(int bufferCount) : VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
-		{			
+		VertexArrayObject(int bufferCount) : ID(-1), BufferLayoutStride(NULL), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
+		{
 			// this->CreateBufferObject(); 
 		}
 
 		VertexArrayObject(float* vertexDataArray, unsigned int vertexArraySize, unsigned int* indexArray, unsigned int indexArraySize) : VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
 		{ 
 			// VertexBufferObject vertexBufferObject;
+			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size() - 1, 3, GL_FLOAT, GL_FALSE), this->VertexBufferObjects.at(this->VertexAttributes.size())); 
 
-			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size() - 1, 3, GL_FLOAT, GL_FALSE)); 
-
-			glGenVertexArrays(this->VertexAttributes.back().ID, &this->VertexAttributes.back().ID);  // Generates the VAO
-			Debug->Log<unsigned int>("this->VertexAttributes.back().ID", this->VertexAttributes.back().ID);  
-			
-			glBindVertexArray(this->VertexAttributes.back().ID);
+			glGenVertexArrays(1, &this->ID);  // Generates the VAO\			
+			glBindVertexArray(this->ID);
 			
 			this->AddVertexBufferObject(VertexBufferObject(vertexDataArray, vertexArraySize, indexArray, indexArraySize));	//	To be replaced by a index buffer generation subroutine
 			
-			glEnableVertexAttribArray(this->VertexAttributes.back().ID);
-			
-			glVertexAttribPointer(this->VertexAttributes.back().ID, this->VertexAttributes.back().Stride, this->VertexAttributes.back().Type, GL_FALSE, this->VertexAttributes.back().Stride * sizeof(float), (void*)this->VertexAttributes.back().Offset);
+			glEnableVertexAttribArray(this->VertexAttributes.back().ID);		
+			glVertexAttribPointer(this->VertexAttributes.back().ID, this->BufferLayoutStride, this->VertexAttributes.back().Type, GL_FALSE, this->VertexAttributes.back().Stride * sizeof(float), (void*)this->VertexAttributes.back().Offset);
 
 			// this->SetVertexAttributePointer(this->VertexAttributeObject.ID, this-0); // sets Vertex Attribute pointer to id 0.
 		}	
 
 		VertexArrayObject(std::vector<float> vertexDataArray, std::vector<unsigned int> indexArray) : VertexBufferObjects(std::vector<VertexBufferObject>()), IsBound(false)
 		{	
-			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size() - 1, 3, GL_FLOAT, GL_FALSE)); 
-			
 			glGenVertexArrays(1, &(this->ID));  // Generates the VAO
-
 			this->Bind();
-
-			for (int x = 0; x < this->VertexAttributes.size(); x++ )
-			{
-				// glBindVertexArray(this->VertexAttributes.back().ID);
-				this->AddVertexBufferObject(VertexBufferObject(vertexDataArray.data(), vertexDataArray.size(), indexArray.data(), indexArray.size()));	//	To be replaced by a index buffer generation subroutine
-
-				glEnableVertexAttribArray(this->VertexAttributes.size() - 1);				
-				glVertexAttribPointer(this->VertexAttributes.size() - 1, this->VertexAttributes.back().Stride, this->VertexAttributes.back().Type, this->VertexAttributes.back().Normalized, this->VertexAttributes.back().Stride * GetByteSize(GL_FLOAT), (void*)this->VertexAttributes.back().Offset);
-			}
-			
-			// glVertexAttrib-Pointer(this->VertexAttributes.back().ID, this->VertexAttributes.back().Stride, this->VertexAttributes.back().Type, GL_FALSE, this->VertexAttributes.back().Stride * sizeof(float), (void*)0);			
-			// this->Unbind(); 
-		}	
 		
+			this->AddVertexBufferObject(VertexBufferObject(vertexDataArray.data(), vertexDataArray.size(), indexArray.data(), indexArray.size()));
+			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE)); 
+	
+			Debug->Log<int>("this->VertexAttributes.size()", this->VertexAttributes.size()); 
+		}
+
 		~VertexArrayObject()
 		{
 			glDeleteVertexArrays(1, &this->VertexAttributes.at(this->VertexAttributes.size() - 1).ID);
 
 			this->DeleteBufferObjects();		
 		}
-	}; 
-
+	};
+	
 	class Mesh 	//	3D/2D meshes
 	{
-	public:		
-		int MatrixSize;	//	VertexMatrix array length
+	public:
+		int MatrixSize;	//	VertexMatrix arra=y length
 
 		VertexArrayObject VAO;	// Vertex Array Object 
 		

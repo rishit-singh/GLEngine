@@ -1,10 +1,15 @@
 #version 400
 
-out vec4  FragmentColor; 
-uniform vec4 uFragmentColor;
+out vec4 FragmentColor; 
+
+in vec2 TextureCoordinates;
+
+// uniform vec4 uFragmentColor;
+uniform sampler2D uTextureSlot; 
 
 void main()
 {
-	FragmentColor = uFragmentColor;
-}
-	
+	vec4 TextureColor = texture(uTextureSlot, TextureCoordinates);
+
+	FragmentColor =	TextureColor;
+}	

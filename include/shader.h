@@ -4,10 +4,11 @@
 
 #include "globjects.h"
 #include "globals.h"
-#include <unordered_map> 
+#include <unordered_map>
+#include <any> 
 
 namespace GLEngine
-{	
+{
 	extern GLenum* ShaderTypeGLenums; 	// Stores GLenums of the respective Shader types
 
 	class Shader
@@ -42,7 +43,7 @@ namespace GLEngine
 
 		// template<typename T>
 		// bool SetUniformValue(char*, unsigned int, T*, int); 	//	Gets the specified uniform location from the current linked shader program
-					
+
 		template<typename T>
 		bool SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
 		{
@@ -53,13 +54,17 @@ namespace GLEngine
 					{
 						case 1:
 							glUniform1f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
-							
+
+							delete data;
+
 							return true; 
 
 							break; 
 
 						case 2:
 							glUniform2f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
+
+							delete data;
 
 							return true; 
 
@@ -68,6 +73,8 @@ namespace GLEngine
 						case 3:
 							glUniform3f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
 
+							delete data;
+
 							return true; 
 
 							break; 
@@ -75,12 +82,16 @@ namespace GLEngine
 						case 4:
 							glUniform4f(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
 
+							delete data;
+
 							return true; 
 
 							break;
 
 						default:
 							std::cout << "\n Invalid uniform type size.";
+
+							delete data;
 
 							return false; 
 					}
@@ -93,6 +104,8 @@ namespace GLEngine
 						case 1:
 							glUniform1i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
 
+							delete data;
+
 							return true;
 							
 							break; 
@@ -101,6 +114,8 @@ namespace GLEngine
 						case 2:
 							glUniform2i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1]); 
 
+							delete data;
+
 							return true;
 							
 							break; 
@@ -108,12 +123,16 @@ namespace GLEngine
 						case 3:
 							glUniform3i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2]); 
 
+							delete data;
+
 							return true;
 							
 							break; 
 
 						case 4:
 							glUniform4i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0], data[1], data[2], data[3]); 
+
+							delete data;
 
 							return true;
 
