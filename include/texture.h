@@ -1,3 +1,5 @@
+#ifndef TEXTURE_H
+
 #include "globjects.h"
 #include "globals.h"
 #include "shader.h"
@@ -69,3 +71,5 @@ namespace GLEngine
 		}
 	};
 }
+
+#endif

@@ -1,6 +1,4 @@
-#pragma once
-
-#define DEFAULTS_H 
+#ifndef DEFAULTS_H 
 
 #include "globjects.h"
 
@@ -19,3 +17,5 @@ namespace GLEngine
 		DefaultWindow
 	}; 
 }; 
+
+#endif

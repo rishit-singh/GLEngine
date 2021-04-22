@@ -1,6 +1,7 @@
 #include <iostream>	
 #include "glengine.h"
 #include "texture.h"
+#include "blending.h"
 #include "fileio.h"
 
 using namespace GLEngine; 
@@ -20,21 +21,26 @@ int main()
 
 	SetCurrentContext(window); 
 	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
-	
+
 	Debug->Log<bool>("GLEW Status: ", SetupGLEW()); 
+
+	Blender blender = Blender();
+
+	blender.Enable(); 
+	blender.ApplyBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	char* VertexShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/vertexshader.vert"), 
 		*FragmentShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/fragmentshader.frag"); 
 
-	Shader* shader = new Shader(VertexShaderString, FragmentShaderString, true	);
+	GLEngine::Shader* shader = new GLEngine::Shader(VertexShaderString, FragmentShaderString, true	);
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
 	VertexArrayObject* VAO = new VertexArrayObject({
-			-0.3f, -0.55f, 0.0f, 0.0f, 0.0f, 
-			-0.3f, 0.65f, 0.0f,	0.0f, 1.0f,
-			0.3f, 0.65f, 0.0f, 1.0f, 1.0f,
-			0.3f, -0.55f, 0.0f, 1.0f, 0.0f
+			-0.2f, -0.65f, 0.0f, 0.0f, 0.0f,
+			-0.2f, 0.75f, 0.0f,	0.0f, 1.0f,	
+			0.2f, 0.75f, 0.0f, 1.0f, 1.0f,
+			0.2f, -0.65f, 0.0f, 1.0f, 0.0f,
 		},		
 
 		{

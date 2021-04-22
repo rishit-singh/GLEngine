@@ -36,7 +36,6 @@ namespace GLEngine
 	
 	extern unsigned int GetByteSize(unsigned int);	//	Returns the byte size of the provided GL type
 
-
 	template<typename T>
 	bool SetBufferData(unsigned int bufferID, T* bufferData, int size, ObjectType objectType)	
 	{	
