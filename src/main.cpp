@@ -51,15 +51,11 @@ int main()
 
 	VAO->AddVertexAttribute(VertexAttributeObject(VAO->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));	
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy_facing_straight.png"); 
 	
 	texture.Bind(); 
 
 	Debug->Log<bool>("texture.SendToShader(*shader)", texture.SendToShader(shader)); 
-
-	// shader->SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { 0 }, 1); 
-
-	// shader->SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { 0 }, 1); 
 
 	VAO->Unbind();
 

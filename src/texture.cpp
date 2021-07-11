@@ -14,7 +14,7 @@ GLEngine::Texture::Texture(char* filePath) : FilePath(filePath), Properties(Defa
     // std::wcout << "TextureBuffer:", this->TextureBuffer;
 
 	glGenTextures(1, &this->ID); //	Generates a texutre buffer
-	glBindTexture(GL_TEXTURE_2D, this->	ID); 	
+	glBindTexture(GL_TEXTURE_2D, this->	ID); 	//	Binds the texture.
 
 	this->SetTextureParameters();
 

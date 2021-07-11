@@ -42,7 +42,7 @@ int GLEngine::Shader::GetUniformLocation(char* uniformName, unsigned int shaderP
 {
 	int location; 
 
-	if (this->UniformHash[uniformName] != NULL)
+	if (this->UniformHash[uniformName] != NULL)	//	Saves some GPU clocks
 		return this->UniformHash[uniformName];
 
 	location = glGetUniformLocation(shaderProgramID, uniformName); 

@@ -6,6 +6,6 @@
 #include <vector>
 #include <GL/glew.h>
 
-typedef char* String; 
+typedef char* String;
 
 // GLenum* GLEnums;

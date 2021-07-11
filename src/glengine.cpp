@@ -176,16 +176,17 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* sh
 {
 	shader->Enable();
 
-	if (colorValue <= 0.0f || colorValue >= 1.0f)
-		i = -i;
+	// if (colorValue <= 0.0f || colorValue >= 1.0f)
+	// 	i = -i;
 
-	shader->SetUniformValue<float>("uFragmentColor", GL_FLOAT, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f }, 4); 
+	// shader->SetUniformValue<float>("uFragmentColor", GL_FLOAT, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f }, 4); 
+	
 	vertexArrayObject->Bind(); 	
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
 	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
 
-	colorValue += i; 
+	// colorValue += i; 
 }
 
 void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
