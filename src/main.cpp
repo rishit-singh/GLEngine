@@ -134,7 +134,6 @@ int main()
 	
 	VAO->Unbind();
 	
-
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
 		window.ProcessInput();
@@ -144,7 +143,7 @@ int main()
 
 		glfwSwapInterval(1); 
 
-		Renderer::Render(VAO, shader); 		
+		Renderer::Render({ VAO }, shader); 		
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();

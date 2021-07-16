@@ -1,7 +1,5 @@
 #include "Debug.h"
 
-
-
 void DebugTools::Debugger::StartConsole()
 {
 	std::cout << UITools::ReplicateChar(' ', 50) << this->Title << "\n" 
