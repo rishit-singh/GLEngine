@@ -16,7 +16,6 @@ bool GLEngine::Shader::Enable()
 		return true; 
 	}
 
-
 	return false; 
 }
 
@@ -47,7 +46,6 @@ int GLEngine::Shader::GetUniformLocation(char* uniformName, unsigned int shaderP
 
 	location = glGetUniformLocation(shaderProgramID, uniformName); 
 
-	// Debug->Log<bool>("Uniform location null:", location == NULL);
 
 	if (location == -1)
 	{
@@ -56,8 +54,6 @@ int GLEngine::Shader::GetUniformLocation(char* uniformName, unsigned int shaderP
 		Debug->Log(message);
 
 		free(message);
-
-		return -1;
 	}
 
 	return location;
@@ -79,6 +75,7 @@ unsigned int* GLEngine::Shader::Compile()
 	catch(GLEngine::GLEInvalidShaderException* e)
 	{
 		e->LogExceptionMessage();		
+
 		return nullptr;
 	}
 
@@ -86,6 +83,7 @@ unsigned int* GLEngine::Shader::Compile()
 	{
 		glShaderSource(this->ShaderIDs[x], 1, &this->ShaderProgramStrings.at(x), NULL);
 		glCompileShader(this->ShaderIDs[x]);
+
 
 		this->CheckErrors(ShaderIDs[x], GL_COMPILE_STATUS);
 	}
@@ -111,8 +109,7 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 {	
 	int success;	//	complie/link status
 
-	char* GLCompilerLog = new char[512]; 
-
+	char* GLCompilerLog = new char[512]; 	
 	switch (glStatus)
 	{
 		case GL_COMPILE_STATUS:	
@@ -121,15 +118,17 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 			try
 	 		{
 				if (!success) 
+				{
 					glGetShaderInfoLog(ShaderProgramID, 512, NULL, GLCompilerLog);
 
-				throw new GLEngine::GLEInvalidShaderException(GLCompilerLog); 
+					throw new GLEngine::GLEInvalidShaderException(GLCompilerLog); 
+				}
 			}
 			catch (GLEngine::GLEInvalidShaderException* e)
 			{	
 				e->LogExceptionMessage(); 
 				
-				Debug->Log(GLCompilerLog); 
+				std::cout << "\n GLSL compiler log: " << GLCompilerLog; 
 			}
 
 			break;
@@ -142,11 +141,13 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 				if (!success) 
 				{
 					glGetProgramInfoLog(ShaderProgramID, 512, NULL, GLCompilerLog);
+				
+					throw new GLEngine::GLEInvalidShaderException(GLCompilerLog);
 				}
 			}
 			catch (const GLEngine::GLEInvalidShaderException& e)
-			{	
-				Debug->Log(GLCompilerLog);
+			{
+				std::cout << "\n GLSL linker log: " << GLCompilerLog; 
 			}
 
 			break;

@@ -19,6 +19,7 @@ GLEngine::Texture::Texture(char* filePath) : FilePath(filePath), Properties(Defa
 	this->SetTextureParameters();
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->Properties.Width, this->Properties.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->TextureBuffer); 
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (this->TextureBuffer)
 		stbi_image_free(this->TextureBuffer);

@@ -60,11 +60,6 @@ namespace GLEngine
 				return false;
 		}
 
-		// glBindBuffer(VertexArrayObject::ObjectTypes[(int)objectType], bufferID);
-
-
-		// Bind(VertexBuffer, 0); 
-
 		return false;		
 	}
 	struct VertexAttributeObject	//	Stores Vertex  Attributes for the buffer layout
@@ -72,7 +67,7 @@ namespace GLEngine
 		unsigned int ID, 
 		Stride, 
 		Type,
-	 	Normalized,
+		Normalized,
 		Offset;
 
 		bool IsValid(); //	Checks if the current instance is valid.
@@ -84,7 +79,7 @@ namespace GLEngine
 		VertexAttributeObject(int id, int stride, int type, unsigned int normalized) : ID(id), Stride(stride), Type(type),Normalized(normalized), Offset(0)
 		{	
 		}
-	
+
 		VertexAttributeObject(int id, int stride, int type, unsigned int normalized, unsigned int offset) : ID(id), Stride(stride), Type(type),Normalized(normalized), Offset(offset)
 		{		
 		}
@@ -111,8 +106,8 @@ namespace GLEngine
 		VertexBufferObject(float* vertexArray, unsigned int vertexArraySize, unsigned int* indexArray, unsigned int indexArraySize) : VertexArray(vertexArray), IndexArray(indexArray), VertexArraySize(vertexArraySize), IndexArraySize(indexArraySize)
 		{
 			//	Buffer generation
-			glGenBuffers(1, &this->VertexBuffer);
-			glGenBuffers(1, &this->IndexBuffer);
+			glGenBuffers(1, &this->VertexBuffer);	//	Vertex buffer generation
+			glGenBuffers(1, &this->IndexBuffer);	//	Index buffer generation
  
 			// Sets the data to the buffer
 			SetBufferData<float>(this->VertexBuffer, this->VertexArray, this->VertexArraySize, ObjectType::VertexBuffer);
@@ -146,8 +141,9 @@ namespace GLEngine
 		VertexBufferObject AddVertexBufferObject(VertexBufferObject);	//	Creates a VertexBufferObejct and adds it to the VAO
 		bool AddVertexAttribute(VertexAttributeObject);	//	Creates a VertexBufferObejct and adds it to the VAO
 		bool AddVertexAttribute(VertexAttributeObject, VertexBufferObject);	//	Creates a VertexBufferObejct and adds it to the VAO
-		void SetVertexAttributePointer(unsigned int);	//	Sets the Vertex Attribute pointer for the latest object
-		void SetVertexAttributePointer(unsigned int, unsigned int);	//	Sets the Vertex Attribute pointer for the provided object id
+		bool SetVertexAttributePointer();	//	Sets the Vertex Attribute pointer for the current vertex array instance.
+		
+		unsigned int GetBufferStride();	//	Generates the buffer stride for the Vertex Attribute pointer
 
 		void Bind();	//	Binds the vertex array object
 		void Bind(unsigned int);	//	Binds the vertex array object at the provided vertex array id
@@ -155,15 +151,14 @@ namespace GLEngine
 
 		bool IsBound;	// Represents the binding status 
 
-		unsigned int ID,	// VAO ID wof the current instance
-		BufferLayoutStride;	//	Strides of all the vertex atrributes in the bufferlayout combined
+		unsigned int ID;// VAO ID wof the current instance
 	
-		VertexArrayObject() : ID(-1), BufferLayoutStride(NULL), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
+		VertexArrayObject() : ID(-1), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
 		{
 			// this->CreateBufferObject(); 
 		}
 
-		VertexArrayObject(int bufferCount) : ID(-1), BufferLayoutStride(NULL), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
+		VertexArrayObject(int bufferCount) : ID(-1), VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
 		{
 			// this->CreateBufferObject(); 
 		}
@@ -171,28 +166,26 @@ namespace GLEngine
 		VertexArrayObject(float* vertexDataArray, unsigned int vertexArraySize, unsigned int* indexArray, unsigned int indexArraySize) : VertexBufferObjects(std::vector<VertexBufferObject>()), VertexAttributes(std::vector<VertexAttributeObject>()), IsBound(false)
 		{ 
 			// VertexBufferObject vertexBufferObject;
-			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size() - 1, 3, GL_FLOAT, GL_FALSE), this->VertexBufferObjects.at(this->VertexAttributes.size())); 
 
-			glGenVertexArrays(1, &this->ID);  // Generates the VAO\			
-			glBindVertexArray(this->ID);
-			
+			glGenVertexArrays(1, &this->ID);  // Generates the VAO			
+			this->Bind();
+
 			this->AddVertexBufferObject(VertexBufferObject(vertexDataArray, vertexArraySize, indexArray, indexArraySize));	//	To be replaced by a index buffer generation subroutine
+			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size() - 1, 3, GL_FLOAT, GL_FALSE), this->VertexBufferObjects.at(this->VertexAttributes.size())); 
 			
-			glEnableVertexAttribArray(this->VertexAttributes.back().ID);		
-			glVertexAttribPointer(this->VertexAttributes.back().ID, this->BufferLayoutStride, this->VertexAttributes.back().Type, GL_FALSE, this->VertexAttributes.back().Stride * sizeof(float), (void*)this->VertexAttributes.back().Offset);
+			// glEnableVertexAttribArray(this->VertexAttributes.back().ID);		
+			// glVertexAttribPointer(this->VertexAtstributes.back().ID, this->BufferLayoutStride, this->VertexAttributes.back().Type, GL_FALSE, this->VertexAttributes.back().Stride * sizeof(float), (void*)this->VertexAttributes.back().Offset);
+		}
 
-			// this->SetVertexAttributePointer(this->VertexAttributeObject.ID, this-0); // sets Vertex Attribute pointer to id 0.
-		}	
-
-		VertexArrayObject(std::vector<float> vertexDataArray, std::vector<unsigned int> indexArray) : VertexBufferObjects(std::vector<VertexBufferObject>()), IsBound(false)
+		VertexArrayObject(std::vector<float> vertexDataArray, std::vector<unsigned int> indexArray) : VertexBufferObjects(std::vector<	VertexBufferObject>()), IsBound(false)
 		{	
 			glGenVertexArrays(1, &(this->ID));  // Generates the VAO
 			this->Bind();
 		
 			this->AddVertexBufferObject(VertexBufferObject(vertexDataArray.data(), vertexDataArray.size(), indexArray.data(), indexArray.size()));
-			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE)); 
-	
-			Debug->Log<int>("this->VertexAttributes.size()", this->VertexAttributes.size()); 
+			this->AddVertexAttribute(VertexAttributeObject(this->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));
+
+			// this->Unbind(); 
 		}
 
 		~VertexArrayObject()

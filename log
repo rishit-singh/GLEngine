@@ -1,0 +1,64 @@
+bin/GLEngine
+Window 0x559b56e43000 deallocated. 
+Debug 0: GLEW Status: : 1
+
+
+Debug 1: Debug context created successfully.
+
+---------------
+Debug message (0): Error
+Source: Application
+Type: Error
+Severity: medium
+
+
+Debug 2: Shader compiled: : 1
+
+
+Debug 3: ID: 0
+
+---------------
+Debug message (1): GL_INVALID_VALUE in glVertexAttribPointer(stride=1466576092 > GL_MAX_VERTEX_ATTRIB_STRIDE)
+Source: API
+Type: Error
+Severity: high
+
+
+Debug 4: Offset: : 12
+
+
+Debug 5: ID: 0
+
+---------------
+Debug message (1): GL_INVALID_VALUE in glVertexAttribPointer(stride=1466576100 > GL_MAX_VERTEX_ATTRIB_STRIDE)
+Source: API
+Type: Error
+Severity: high
+
+
+Debug 6: Offset: : 12
+
+
+Debug 7: ID: 1
+
+---------------
+Debug message (1): GL_INVALID_VALUE in glVertexAttribPointer(stride=1466576100 > GL_MAX_VERTEX_ATTRIB_STRIDE)
+Source: API
+Type: Error
+Severity: high
+
+
+Debug 8: Offset: : 20
+
+
+Debug 9: VAO->VertexAttributes.size(): 2
+
+
+Debug 10: Uniform location:: 0
+
+---------------
+Debug message (1): GL_INVALID_OPERATION in glUniform(program not linked)
+Source: API
+Type: Error
+Severity: high
+

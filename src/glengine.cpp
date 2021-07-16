@@ -38,9 +38,21 @@ GLEngine::VertexBufferObject GLEngine::VertexArrayObject::AddVertexBufferObject(
 	return this->VertexBufferObjects.back(); 
 }
 
+unsigned int GLEngine::VertexArrayObject::GetBufferStride()
+{
+	int bufferStride = 0, sizeTemp;
+
+	sizeTemp = this->VertexAttributes.size(); 
+
+	for (int x = 0; x < sizeTemp; x++)
+		bufferStride += this->VertexAttributes.at(x).Stride * sizeof(float);
+
+	return bufferStride;
+}
+
 bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeObject vertexAttributeObject, GLEngine::VertexBufferObject vertexBufferObject)
 {
-	int sizeTemp = 0, offsetTemp = 0; 
+	int sizeTemp = 0, offsetTemp = 0, strideTemp = 0, bufferStride = 0; 
 
 	if (!vertexAttributeObject.IsValid())
 	{
@@ -51,15 +63,16 @@ bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeOb
 
 	this->VertexAttributes.push_back(vertexAttributeObject);
 
-	sizeTemp = this->VertexAttributes.size(); 
+	sizeTemp = this->VertexAttributes.size();
 
-	this->BufferLayoutStride += vertexAttributeObject.Stride * sizeof(float); 
+	bufferStride = this->GetBufferStride();
 
 	for (int x = 0; x < sizeTemp; x++)
 	{
-		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID		);
+		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
+		
 		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
-		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, this->BufferLayoutStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
+		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, (strideTemp = (this->VertexAttributes.at(x).Stride * sizeof(float))), (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
 
 		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
 	}
@@ -69,32 +82,16 @@ bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeOb
 
 bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeObject vertexAttributeObject)
 {
-	int sizeTemp = 0, offsetTemp = 0; 
-
 	if (!vertexAttributeObject.IsValid())
 	{
-		Debug->Log("Invalid VertexBufferObject provided.");
+		Debug->Log("Invalid Vertex Attribute Object provided.");
 
-		return false; 
+		return false;
 	}
 
 	this->VertexAttributes.push_back(vertexAttributeObject);
 
-	sizeTemp = this->VertexAttributes.size(); 
-
-	this->BufferLayoutStride += vertexAttributeObject.Stride * sizeof(float); 
-
-	for (int x = 0; x < sizeTemp; x++)
-	{
-		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
-
-		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
-		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, this->BufferLayoutStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
-
-		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
-	}
-	
-	return true; 
+	return true;
 }
 
 void GLEngine::SetWindowHints(unsigned int major, unsigned int minor)
@@ -147,22 +144,25 @@ bool GLEngine::SetupGLFW()
 void GLEngine::VertexArrayObject::Bind()
 {
 	glBindVertexArray(this->ID); 
+	this->IsBound = true;
 }
 
 void GLEngine::VertexArrayObject::Bind(unsigned int id)
 {
 	glBindVertexArray(id); 	
+	this->IsBound = true;
 }
 
 void GLEngine::VertexArrayObject::Unbind()
 {
-	glBindVertexArray(0); 
+	glBindVertexArray(0);
+	this->IsBound = false;
 }
 
 void GLEngine::Renderer::Render(GLEngine::Mesh* mesh)
 {		
 	glUseProgram(mesh->MeshShader.ShaderProgramID);
-
+	
 	glBindVertexArray(mesh->VAO.VertexAttributes.at(mesh->VAO.VertexAttributes.size() - 1).ID); 
 
 	glDrawArrays(GL_TRIANGLES, 0, 3); 
@@ -174,30 +174,30 @@ float i = 0.1f;	// increament value
 
 void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader)
 {
-	shader->Enable();
 
 	// if (colorValue <= 0.0f || colorValue >= 1.0f)
 	// 	i = -i;
 
-	// shader->SetUniformValue<float>("uFragmentColor", GL_FLOAT, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f }, 4); 
-	
-	vertexArrayObject->Bind(); 	
+	shader->Enable();
+	// shader->SetUniformValue<float>("uFragmentColor", GL_FLOAT, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f }, 4); 	
+
+
+	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
 	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
-
 	// colorValue += i; 
 }
 
 void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
 {
-	glUseProgram(object->ObjectMesh->MeshShader.ShaderProgramID);
+	object->ObjectMesh->MeshShader.Enable();
 	// mesh->VAO.Bind(VertexArrayObject::VertexArray, 0);
-	glBindVertexArray(object->ObjectMesh->VAO.VertexAttributes.at(object->ObjectMesh->VAO.VertexAttributes.size() - 1).ID); 	
-	object->VAO->VertexBufferObjects.at(object->VAO->VertexBufferObjects.size() - 1).Bind(GLEngine::IndexBuffer); 
+	object->ObjectMesh->VAO.Bind(); 	
+	object->VAO->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer); 
 	
 	glDrawArrays(GL_TRIANGLES, 0, 3); // temporary rendering type
-}	
+}
 
 // bool GLEngine::Renderer::GLLoop(GLEngine::Window window, Mesh* mesh)
 // {
@@ -212,7 +212,7 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
 
 // 		glfwSwapBuffers(window.GLWindow);
 // 		glfwPollEvents();
-// 	// mesh->VAO.Bind(VertexArrayObject::VertexArray, 0);
+// mesh	->VAO.Bind(VertexArrayObject::VertexArray, 0);
 // 	} 
 
 // 	return true;
@@ -393,13 +393,30 @@ bool GLEngine::VertexBufferObject::UnBind(GLEngine::ObjectType objectType)
 	return false; 
 }
 
-
-void GLEngine::VertexArrayObject::SetVertexAttributePointer(unsigned int id, unsigned int size)	// todo: make argumentes more specific.
+bool GLEngine::VertexArrayObject::SetVertexAttributePointer()
 {
-	// this->Bind(VertexArrayObject::VertexArray, id); 
-	glVertexAttribPointer(id, size, GL_FLOAT, GL_FALSE, size * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(id);
-}	
+	int sizeTemp = 0, offsetTemp = 0, strideTemp, bufferStride; 
+
+	sizeTemp = this->VertexAttributes.size(); 
+
+	Debug->Log("sizeTemp", sizeTemp);
+
+	bufferStride = this->GetBufferStride();;
+
+	for (int x = 0; x < sizeTemp; x++)
+	{
+		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
+
+		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
+		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, bufferStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
+
+		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
+		
+		Debug->Log("Stride: ", strideTemp);
+	}
+	
+	return true; 
+}
 
 GLEngine::GLEObject::GLEObject() : ID(GLEngine::AllocatedGLEObjects.size()), VAO(new VertexArrayObject()), MeshArray(std::vector<Mesh*>()), ObjectMesh(new Mesh())
 {
