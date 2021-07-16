@@ -14,11 +14,12 @@ GLEngine::Texture::Texture(char* filePath) : FilePath(filePath), Properties(Defa
     // std::wcout << "TextureBuffer:", this->TextureBuffer;
 
 	glGenTextures(1, &this->ID); //	Generates a texutre buffer
-	glBindTexture(GL_TEXTURE_2D, this->	ID); 	
+	glBindTexture(GL_TEXTURE_2D, this->	ID); 	//	Binds the texture.
 
 	this->SetTextureParameters();
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->Properties.Width, this->Properties.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->TextureBuffer); 
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	if (this->TextureBuffer)
 		stbi_image_free(this->TextureBuffer);

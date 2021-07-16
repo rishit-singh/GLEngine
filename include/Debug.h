@@ -8,7 +8,9 @@
 #include <vector>
 
 namespace DebugTools
-{
+{	
+	extern void DebugCallBack();
+
 	class UITools
 	{
 	public:

@@ -5,8 +5,10 @@
 #include "globjects.h"
 #include "defaults.h"
 
+
 namespace GLEngine
 {	
+	typedef Point2D WindowResolution;
 	// void FrameBufferSizeCallBack(GLFWwindow* window, int height, int width);
 				
 	class Window	
@@ -17,7 +19,7 @@ namespace GLEngine
 		unsigned long ID; //	Window ID
 
 		String Title;	//	Window title
-		Point2D Resolution; //	Window resolution
+		WindowResolution Resolution; //	Window resolution
 		Color BackgroundColor; //	Window background color coordinates.
 		
 		GLFWwindow* GLWindow;	//	GLFWwindow pointer 		

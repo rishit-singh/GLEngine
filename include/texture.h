@@ -1,9 +1,10 @@
 #ifndef TEXTURE_H
 
+#include <GL/glew.h>
 #include "globjects.h"
 #include "globals.h"
 #include "shader.h"
-#include <GL/glew.h>
+#include "window.h"
 
 
 namespace GLEngine
