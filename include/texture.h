@@ -68,7 +68,7 @@ namespace GLEngine
 		{
 			glDeleteTextures(1, &this->ID); 
 
-			delete &this->Properties;
+			// delete &this->Properties;
 		}
 	};
 }

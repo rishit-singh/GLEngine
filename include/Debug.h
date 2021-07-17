@@ -6,11 +6,10 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include "GL/glew.h"
 
 namespace DebugTools
-{	
-	extern void DebugCallBack();
-
+{
 	class UITools
 	{
 	public:

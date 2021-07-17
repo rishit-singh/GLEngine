@@ -25,6 +25,21 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* sh
 	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
 }
 
+void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader, Texture texture)
+{
+	texture.Bind();
+	texture.SendToShader(shader);
+
+	shader->Enable();
+
+	vertexArrayObject->Bind();
+	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
+
+	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+
+	texture.Unbind();
+}
+
 void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader* shader)
 {
 	int sizeTemp = vertexArrayObjects.size();
@@ -44,6 +59,27 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 		vertexArrayObjects.at(x)->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
 		glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+
+		vertexArrayObjects.at(x)->Unbind();
+	}
+}
+
+void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader* shader, std::vector<Texture> textures)
+{
+	int sizeTemp = vertexArrayObjects.size();
+
+	if (!sizeTemp)
+	{
+		Debug->Log("No VertexArrayObject instances were provided.");
+
+		return;
+	}
+
+	shader->Enable();
+
+	for (int x = 0; x < sizeTemp; x++)
+	{
+		GLEngine::Renderer::Render(vertexArrayObjects.at(x), shader, textures.at(x));
 	}
 }
 
