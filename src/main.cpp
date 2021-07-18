@@ -1,4 +1,5 @@
 #include <iostream>	
+#include <math.h>
 #include "glengine.h"
 #include "blending.h"
 #include "fileio.h"
@@ -10,6 +11,7 @@ void CreateDebugContext();
 
 void DrawRectangle(Vertex2Df, Vertex2Df, Shader*);
 void GenerateTileMap(Vertex2Df, Vertex2Df, Shader*);
+void GenerateTileMap(Vertex2Df, Vertex2Df, Shader*, Point2Df);
 
 void glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam)
 {
@@ -75,10 +77,10 @@ void DrawRectangle(Vertex2Df dimenions, Vertex2Df location, Shader* shader)
 
 	VertexArrayObject* VAO = new VertexArrayObject(
 		{
-			location.Position.X, location.Position.Y, 0.0f,		0.0f, 0.1f,
+			location.Position.X, location.Position.Y, 0.0f,		0.0f, 1.f,
 			location.Position.X, location.Position.Y - yIncrement, 0.0f,		0.0f, 0.0f,
-			location.Position.X + xIncrement, location.Position.Y - yIncrement, 0.0,	0.1f, 0.0f,
-			location.Position.X + xIncrement, location.Position.Y, 0.0f,		0.1f, 0.1f
+			location.Position.X + xIncrement, location.Position.Y - yIncrement, 0.0,	1.0f, 0.0f,
+			location.Position.X + xIncrement, location.Position.Y, 0.0f,		1.0f, 1.0f
 		},
 
 		{
@@ -111,6 +113,7 @@ void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* sh
 			DrawRectangle(Vertex2Df(Point2Df(dimensions.Position.X, dimensions.Position.Y)), Vertex2Df(Point2Df(x, y)), shader);
 }
 
+
 int main()
 {
 	if (!SetupGLFW())
@@ -124,7 +127,7 @@ int main()
 	
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
-	Window window = Window("GLEngine App", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5)); 
+	Window window = Window("GLEngine MC Loading", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5)); 
 
 	SetCurrentContext(window); 
 	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
@@ -147,10 +150,11 @@ int main()
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/grass_block.png"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/dirt.jpg"); 
 
 	texture.Bind();
 	texture.SendToShader(shader);
+
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -161,21 +165,13 @@ int main()
 
 		glfwSwapInterval(1); 
 
-		// Renderer::Render({ VAO, VAO1, VAO2 }, shader);
-		// for (float x = -1.0f; x < 1.0f; x += 0.1f)
-		// 	DrawRectangle(GLEngine::Vertex2Df(Point2Df(0.1f, 0.2f)), Vertex2Df(Point2Df(x, 0.0f)), shader);
+		texture.Bind();
 
-		DrawRectangle(Vertex2Df(Point2Df(0.2f, 0.8f)), Vertex2Df(Point2Df(0, 0.7f)), shader);
-		GenerateTileMap(Vertex2Df(Point2Df(0.1f, 0.2f)), Vertex2Df(Point2Df(-1.0f, -0.1f)), shader);
+		GenerateTileMap(Vertex2Df(Point2Df(0.2f, 0.4f)), Vertex2Df(Point2Df(-1.0f, 1.0f)), shader);
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();
 	}
 
-	// delete VAO;
-	// delete VAO1;
-	// delete VAO2;
-
 	return 0; 
 }
-

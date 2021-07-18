@@ -22,7 +22,7 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* sh
 	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
-	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+	glDrawElements(GL_TRIANGLES, vertexArrayObject->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
 }
 
 void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader, Texture texture)
@@ -35,7 +35,7 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* sh
 	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
-	glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+	glDrawElements(GL_TRIANGLES, vertexArrayObject->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
 
 	texture.Unbind();
 }
@@ -58,7 +58,7 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 		vertexArrayObjects.at(x)->Bind();
 		vertexArrayObjects.at(x)->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
-		glDrawElements(GL_TRIANGLES, 256, GL_UNSIGNED_INT, nullptr); 
+		glDrawElements(GL_TRIANGLES, vertexArrayObjects.at(x)->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
 
 		vertexArrayObjects.at(x)->Unbind();
 	}

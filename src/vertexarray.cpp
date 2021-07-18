@@ -83,8 +83,6 @@ bool GLEngine::VertexArrayObject::AddVertexAttribute(GLEngine::VertexAttributeOb
 
 	for (int x = 0; x < sizeTemp; x++)
 	{
-		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
-		
 		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
 		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, (strideTemp = (this->VertexAttributes.at(x).Stride * sizeof(float))), (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
 
@@ -198,22 +196,16 @@ bool GLEngine::VertexArrayObject::SetVertexAttributePointer()
 {
 	int sizeTemp = 0, offsetTemp = 0, strideTemp, bufferStride; 
 
-	sizeTemp = this->VertexAttributes.size(); 
-
-	Debug->Log("sizeTemp", sizeTemp);
+	sizeTemp = this->VertexAttributes.size();
 
 	bufferStride = this->GetBufferStride();;
 
 	for (int x = 0; x < sizeTemp; x++)
 	{
-		Debug->Log<int>("ID", this->VertexAttributes.at(x).ID);
-
 		glEnableVertexAttribArray(this->VertexAttributes.at(x).ID); 
 		glVertexAttribPointer(this->VertexAttributes.at(x).ID, this->VertexAttributes.at(x).Stride, this->VertexAttributes.at(x).Type, this->VertexAttributes.at(x).Normalized, bufferStride, (void*)offsetTemp);//	this->VertexAttributes.back().Offset);
 
 		offsetTemp += this->VertexAttributes.at(x).Stride * GetByteSize(GL_FLOAT);
-		
-		Debug->Log("Stride: ", strideTemp);
 	}
 	
 	return true; 
