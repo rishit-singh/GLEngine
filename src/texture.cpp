@@ -58,3 +58,22 @@ bool GLEngine::Texture::SendToShader(GLEngine::Shader* shader)
 	//	ToDo:	Pass texture slots
 	return shader->SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { (int)this->ID }, 1);
 }
+
+bool GLEngine::Texture::IsValid()
+{
+	return (
+		this->ID > 0 &&
+		this->TextureBuffer != nullptr &&
+		this->Slot > 0 &&
+		this->Properties.Verify()
+	);	
+
+}
+
+bool GLEngine::TexturePropertyObject::Verify()
+{
+	return (
+		this->Height > 0 && 
+		this->Width > 0
+	);	
+}

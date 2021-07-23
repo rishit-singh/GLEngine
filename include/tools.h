@@ -132,7 +132,7 @@ namespace GLEngine
 			return floatArray;
 		}
 
-		static float* PointArrayToFloatArray(Vertex3Df* pointArray, int size)	
+		static float* VertexArrayToFloatArray(Vertex3Df* pointArray, int size)	
 		{
 			float* floatArray = new float[size * 3]; 
 
@@ -166,19 +166,19 @@ namespace GLEngine
 			return false;   
 		}
 
-		static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
-		{	
-			float* array = new float[size * 3]; 
+		// static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
+		// {	
+		// 	float* array = new float[size * 3]; 
 
-			for (int x = 0; x < size; x++)
-			{
-				array[x] = vertexArray[x].Position.X;
-				array[x + 1] = vertexArray[x].Position.Y;
-				array[x + 2] = vertexArray[x].Position.Z;
-			}
+		// 	for (int x = 0; x < size; x++)
+		// 	{
+		// 		array[x] = vertexArray[x].Position.X;
+		// 		array[x + 1] = vertexArray[x].Position.Y;
+		// 		array[x + 2] = vertexArray[x].Position.Z;
+		// 	}
 
-			return array;
-		}
+		// 	return array;
+		// }
 
 		template<typename T>
 		static T* VectorToArray(std::vector<T> vectorArray)
