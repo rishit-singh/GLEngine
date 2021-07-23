@@ -75,10 +75,6 @@ namespace GLEngine
 			if (valid = this->MeshTexture->IsValid())
 				this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			
-			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));
-
-			Debug->Log("Texture Validity: ", this->MeshTexture->TextureBuffer == nullptr);
-
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
 			this->MeshTexture->Bind();
