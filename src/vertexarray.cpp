@@ -44,7 +44,7 @@ GLEngine::VertexBufferObject GLEngine::VertexArrayObject::AddVertexBufferObject(
 	{
 		Debug->Log("Invalid VertexBufferObject provided.");
 
-		return VertexBufferObject(); 
+		return VertexBufferObject();
 	}
 
 	this->VertexBufferObjects.push_back(vertexBufferObject);

@@ -12,6 +12,7 @@ void CreateDebugContext();
 void DrawRectangle(Vertex2Df, Vertex2Df, Shader*);
 void GenerateTileMap(Vertex2Df, Vertex2Df, Shader*);
 void GenerateTileMap(Vertex2Df, Vertex2Df, Shader*, Point2Df);
+void GenerateTileMap(Point2D, VertexArrayObject, Shader*);
 
 void glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam)
 {
@@ -115,7 +116,7 @@ void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* sh
 
 
 int main()
-{
+{	
 	if (!SetupGLFW())
 	{	
 		Debug->Log("Failed to setup GLFW. "); 
@@ -135,8 +136,7 @@ int main()
 	Debug->Log<bool>("GLEW Status: ", SetupGLEW()); 
 	CreateDebugContext();
 
-
-	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "Error");
+	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "Debug context check.");
 
 	Blender blender = Blender();
 
@@ -150,11 +150,63 @@ int main()
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/dirt.jpg"); 
+	// VertexArrayObject* VAO = new VertexArrayObject(
+	// 	{
+	// 		-0.1f, 0.0f, 0.0f, 0.0f, 1.0f,
+	// 		-0.1f, -0.3f, 0.0f, 0.0f, 0.0f,
+	// 		0.1f, -0.3f, 0.0f, 1.0f, 0.0f,
+	// 		0.1f, 0.0f, 0.0f, 1.0f, 1.0f
+	// 	},
+
+	// 	{
+	// 		0, 1, 2,
+	// 		2, 3, 0
+	// 	}
+	// );
+
+	// VAO->AddVertexAttribute(VertexAttributeObject(VAO->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
+
+	// VAO->SetVertexAttributePointer();
+
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"); 
+
+	Mesh mesh = Mesh(
+		{
+			-0.3f, 0.4f, 0.0f,	0.0f, 1.0f,
+			-0.3f, -0.3f, 0.0f,	0.0f, 0.0f,
+			0.1f, -0.3f, 0.0f, 	1.0f, 0.0f,
+			0.1f, 0.4f, 0.0f, 	1.0f, 1.0f
+		},	
+
+		{
+			0, 1, 2,
+			2, 3, 0
+		}, 
+		
+	shader);
+
+	// mesh.MeshTexture.Bind();
+	// mesh.MeshTexture.SendToShader(shader);
+
+	float* VertexArray = new float[20] {
+		0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, -0.3f, 0.0f, 0.0f, 0.0f,
+		0.2f, -0.3f, 0.0f, 1.0f, 0.0f,
+		0.2f, 0.0f, 0.0f, 1.0f, 1.0f
+	};
+
+	unsigned int* IndexArray = new unsigned int[6] {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	VertexBufferObject vbo = VertexBufferObject(VertexArray, 20, IndexArray, 6);
+	
+	mesh.AddVertexArrayObject(new VertexArrayObject(vbo));
 
 	texture.Bind();
 	texture.SendToShader(shader);
-
+	// mesh.AddBufferObject(vbo, mesh.VertexArrayObjects.size() - 1);
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -163,15 +215,17 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
 
-		glfwSwapInterval(1); 
+		glfwSwapInterval(1);
+		// mesh.MeshTexture.Bind();
+		// mesh.MeshTexture.SendToShader(shader);
 
-		texture.Bind();
-
-		GenerateTileMap(Vertex2Df(Point2Df(0.2f, 0.4f)), Vertex2Df(Point2Df(-1.0f, 1.0f)), shader);
+		Renderer::Render(mesh);
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();
 	}
+
+	// delete VAO;
 
 	return 0; 
 }

@@ -47,11 +47,13 @@ namespace GLEngine
 
 	public:		
 		unsigned int ID; //	Texture buffer ID
-		unsigned char* TextureBuffer;	//	Stores the image data+
-
+		unsigned char* TextureBuffer;	//	Stores the image data.
+		
 		unsigned int Slot; 
 
 		TexturePropertyObject Properties; //	Visual properties of the texture
+
+		bool IsValid();	//	Checks if the current texture instance is valid.
 
 		void Bind();	//	Binds the texture to slot 0. 
 		void Bind(unsigned int);	//	Binds the texture to the specified texture slots 
