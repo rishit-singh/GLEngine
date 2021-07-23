@@ -148,7 +148,6 @@ void GLEngine::Renderer::Render(GLEngine::Mesh mesh)
 			glDrawElements(GL_TRIANGLES, mesh.VertexArrayObjects.back()->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr);
 		}
 	// mesh.VertexArrayObjects.back()->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
-	
 }
 
 // GLEngine::GLEObject::GLEObject() : ID(GLEngine::AllocatedGLEObjects.size()), VAO(new VertexArrayObject(nullptr, NULL, nullptr, NULL)), MeshArray(std::vector<Mesh*>()), ObjectMesh(new Mesh())
@@ -207,4 +206,12 @@ bool GLEngine::Mesh::AddBufferObject(VertexBufferObject vertexBufferObject, unsi
 	this->Update(index);
 
 	return true;
+}
+
+void GLEngine::Mesh::DeleteVAOs()
+{
+	int sizeTemp = this->VertexArrayObjects.size();
+
+	for (int x = 0; x < sizeTemp; x++)
+		delete this->VertexArrayObjects.at(x);
 }

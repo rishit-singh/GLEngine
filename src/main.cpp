@@ -128,7 +128,7 @@ int main()
 	
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
-	Window window = Window("GLEngine MC Loading", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5)); 
+	Window window = Window("GLEngine App", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5)); 
 
 	SetCurrentContext(window); 
 	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
@@ -150,32 +150,14 @@ int main()
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	// VertexArrayObject* VAO = new VertexArrayObject(
-	// 	{
-	// 		-0.1f, 0.0f, 0.0f, 0.0f, 1.0f,
-	// 		-0.1f, -0.3f, 0.0f, 0.0f, 0.0f,
-	// 		0.1f, -0.3f, 0.0f, 1.0f, 0.0f,
-	// 		0.1f, 0.0f, 0.0f, 1.0f, 1.0f
-	// 	},
-
-	// 	{
-	// 		0, 1, 2,
-	// 		2, 3, 0
-	// 	}
-	// );
-
-	// VAO->AddVertexAttribute(VertexAttributeObject(VAO->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
-
-	// VAO->SetVertexAttributePointer();
-
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/texture.jpg"); 
 
 	Mesh mesh = Mesh(
 		{
-			-0.3f, 0.4f, 0.0f,	0.0f, 1.0f,
-			-0.3f, -0.3f, 0.0f,	0.0f, 0.0f,
-			0.1f, -0.3f, 0.0f, 	1.0f, 0.0f,
-			0.1f, 0.4f, 0.0f, 	1.0f, 1.0f
+			-0.2f, 0.4f, 0.0f,		0.0f, 1.0f
+			-0.2f, -0.3f, 0.0f,		0.0f, 0.0f,
+			0.2f, -0.3f, 0.0f, 		1.0f, 0.0f,
+			0.2f, 0.4f, 0.0f, 		1.0f, 1.0f
 		},	
 
 		{
@@ -183,30 +165,7 @@ int main()
 			2, 3, 0
 		}, 
 		
-	shader);
-
-	// mesh.MeshTexture.Bind();
-	// mesh.MeshTexture.SendToShader(shader);
-
-	float* VertexArray = new float[20] {
-		0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, -0.3f, 0.0f, 0.0f, 0.0f,
-		0.2f, -0.3f, 0.0f, 1.0f, 0.0f,
-		0.2f, 0.0f, 0.0f, 1.0f, 1.0f
-	};
-
-	unsigned int* IndexArray = new unsigned int[6] {
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	VertexBufferObject vbo = VertexBufferObject(VertexArray, 20, IndexArray, 6);
-	
-	mesh.AddVertexArrayObject(new VertexArrayObject(vbo));
-
-	texture.Bind();
-	texture.SendToShader(shader);
-	// mesh.AddBufferObject(vbo, mesh.VertexArrayObjects.size() - 1);
+	shader, &texture);
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -214,18 +173,13 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
-
 		glfwSwapInterval(1);
-		// mesh.MeshTexture.Bind();
-		// mesh.MeshTexture.SendToShader(shader);
-
+		
 		Renderer::Render(mesh);
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();
 	}
-
-	// delete VAO;
-
+	
 	return 0; 
 }

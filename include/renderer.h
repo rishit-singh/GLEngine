@@ -8,6 +8,9 @@ namespace GLEngine
 {
 	class Mesh	//	3D/2D Mesh
 	{
+	private:
+		void DeleteVAOs();	//	Deletes all the allocated VAOs in the current mesh instance.
+
 	public:
 		int MatrixSize;	//	VertexMatrix array length
 
@@ -17,7 +20,7 @@ namespace GLEngine
 
 		Shader* MeshShader;	// Shader object of the current mesh
 	
-		Texture MeshTexture;	//	Texture to be mapped on the mesh objects.
+		Texture* MeshTexture;	//	Texture to be mapped on the mesh objects.
 
 		float* VertexMatrixArray;
 
@@ -28,11 +31,11 @@ namespace GLEngine
 
 		bool IsValid();
 		
-		Mesh() : VertexMatrixVector(std::vector<Vertex3Df>()), VertexMatrixArray(nullptr), MatrixSize(0), MeshShader(nullptr), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(Texture())
+		Mesh() : VertexMatrixVector(std::vector<Vertex3Df>()), VertexMatrixArray(nullptr), MatrixSize(0), MeshShader(nullptr), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 		}
 		
-		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(Texture())
+		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{	
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, vertexBufferSize, indexBufferArray, indexBufferSize));
 			
@@ -42,11 +45,11 @@ namespace GLEngine
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
-		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader, Texture texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
+		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, vertexBufferSize, indexBufferArray, indexBufferSize));
 	
-			if (this->MeshTexture.IsValid())
+			if (this->MeshTexture->IsValid())
 				this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
@@ -54,7 +57,7 @@ namespace GLEngine
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
-		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(Texture())		
+		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)		
 		{			
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, indexArray));
 
@@ -63,31 +66,37 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 		}
 
-		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader, Texture texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
+		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
 		{
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, indexArray));
 
-			if (this->MeshTexture.IsValid())
+			bool valid;
+
+			if (valid = this->MeshTexture->IsValid())
 				this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
+			
+			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));
+
+			Debug->Log("Texture Validity: ", this->MeshTexture->TextureBuffer == nullptr);
 
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
-			this->MeshTexture.Bind();
-			this->MeshTexture.SendToShader(this->MeshShader);
+			this->MeshTexture->Bind();
+			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 
-		Mesh(std::vector<Vertex3Df> vertexMatrixVector) : VertexMatrixVector(vertexMatrixVector), VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(nullptr), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(Texture())
+		Mesh(std::vector<Vertex3Df> vertexMatrixVector) : VertexMatrixVector(vertexMatrixVector), VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(nullptr), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 		}
 
-		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, Shader* shader) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(Texture())
+		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, Shader* shader) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 		}
 
 		~Mesh()
 		{
-			// delete this->MeshShader,
-			// 	this->VAO;
+			// delete this->MeshShader;
+			// this->DeleteVAOs();
 		}
 	};
 
