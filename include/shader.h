@@ -41,8 +41,48 @@ namespace GLEngine
 		unsigned int* Compile();	//	Compiles all the shaders at once if eligible
 		unsigned int Link();	//	Links the compiled shaders into one shader program						
 
+
 		// template<typename T>
 		// bool SetUniformValue(char*, unsigned int, T*, int); 	//	Gets the specified uniform location from the current linked shader program
+
+		template<typename T>
+		bool SetSquareMatrix(char* uniformName, T* matrix, unsigned int glType, int size)
+		{
+			switch (glType)
+			{
+				case GL_FLOAT:
+					switch (size)
+					{					
+						case 2:
+							glUniformMatrix2fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+
+							break;
+
+						case 3:
+							glUniformMatrix3fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+
+							break;
+
+						case 4:
+							glUniformMatrix4fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+						
+							break;
+					}
+			}
+		}
+
+		bool SetMatrix4f(char* uniformName, float* matrix)
+		{
+			Debug->Log(uniformName);
+
+			int location = glGetUniformLocation(this->ShaderProgramID, uniformName);
+
+			Debug->Log("Location retrieved");
+
+			glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
+
+			Debug->Log("Uniform set");
+		}
 
 		template<typename T>
 		bool SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)

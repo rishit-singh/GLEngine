@@ -72,6 +72,8 @@ void CreateDebugContext()
 	} 
 }
 
+GLEngine::Camera camera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(), glm::vec3(), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f)));
+
 void DrawRectangle(Vertex2Df dimenions, Vertex2Df location, Shader* shader)
 {
 	float xIncrement = dimenions.Position.X, yIncrement = dimenions.Position.Y;
@@ -115,7 +117,6 @@ void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* sh
 }
 
 
-
 int main()
 {	
 	if (!SetupGLFW())
@@ -151,7 +152,7 @@ int main()
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/dirt.jpg"); 
 
 	Mesh mesh = Mesh(
 		{
@@ -217,19 +218,11 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	shader->Compile();
-
-	unsigned int program = glCreateProgram();
-
-	for (int x = 0; x < 2; x++)
-		glAttachShader(program, shader->ShaderIDs[x]);
-
-	glLinkProgram(program);
-	shader->ShaderProgramID = program;
+	const int radius = 20.0f;
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
-		window.ProcessInput();
+		window.ProcessInput(camera);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -238,11 +231,13 @@ int main()
 	
 		MVPMatrixObject mvp = MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 
+		mvp.View = camera.GetViewMatrix();
+		
 		for (float x = 0.0f; x < 10.0f; x += 1.0f)
 		{
-			mvp.Model = glm::rotate(mvp.Model,glm::radians(20 * x), glm::vec3(0.5f, 1.0f, 0.0f));
-			mvp.View = glm::translate(mvp.View, glm::vec3(x, 0.0f, -3.0f));
+			mvp.Model = glm::rotate(mvp.Model, (float)glfwGetTime() * glm::radians(20 * (x + 1)), glm::vec3(0.5f, 1.0f, 0.0f));
 			mvp.Projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 100.0f);
+			mvp.View = glm::translate(mvp.View, glm::vec3(x, 0.0f, -1.0f));
 			
 			unsigned int modelLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "model"),
 				viewLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "view"),
@@ -251,7 +246,15 @@ int main()
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(mvp.Model));
 			glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &(mvp.View[0][0]));
 			glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(mvp.Projection));
-
+			
+			// float* model = glm::value_ptr(mvp.Model), 
+			// *view = &(mvp.View[0][0]), 
+			// *projection = glm::value_ptr(mvp.Projection);
+			
+			// mesh.MeshShader->SetMatrix4f("model", model);
+			// mesh.MeshShader->SetMatrix4f("view", view);
+			// mesh.MeshShader->SetMatrix4f("projection", projection);
+			
 			Renderer::Render(mesh);
 		}
 

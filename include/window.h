@@ -4,13 +4,16 @@
 
 #include "globjects.h"
 #include "defaults.h"
-
+#include "camera.h"
 
 namespace GLEngine
 {	
 	typedef Point2D WindowResolution;
 	// void FrameBufferSizeCallBack(GLFWwindow* window, int height, int width);
-				
+
+	void SetDeltaTime(float, float*, float*, float*);	//	returns the delta time for the given camera speed
+
+
 	class Window	
 	{
 	public:
@@ -27,7 +30,7 @@ namespace GLEngine
 		static void FrameBufferSizeCallBack(GLFWwindow* window, int height, int width);	// GLFW FrameBufferSizeCallBack function
 	
 		void Close();	//	Closes the current window instance 
-		void ProcessInput(); //	Processes input events
+		void ProcessInput(Camera&); //	Processes input events
 
 		// Constructors forward declared for global variables depending upon this class to work.
 

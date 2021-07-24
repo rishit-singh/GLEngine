@@ -113,23 +113,23 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject* object)
 // 	return true;
 // }
 
-bool GLEngine::Renderer::GLLoop(GLEngine::Window window, GLEObject* object)
-{
-	while (!glfwWindowShouldClose(window.GLWindow))
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);
+// bool GLEngine::Renderer::GLLoop(GLEngine::Window window, GLEObject* object)
+// {
+// 	while (!glfwWindowShouldClose(window.GLWindow))
+// 	{
+// 		glClear(GL_COLOR_BUFFER_BIT);
+// 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);
 		
-		window.ProcessInput();
+// 		window.ProcessInput();
 		
-		GLEngine::Renderer::Render(object);	//	Renders the mesh  
+// 		GLEngine::Renderer::Render(object);	//	Renders the mesh  
 
-		glfwSwapBuffers(window.GLWindow);
-		glfwPollEvents();
-	}
+// 		glfwSwapBuffers(window.GLWindow);
+// 		glfwPollEvents();
+// 	}
 
-	return true;
-}
+// 	return true;
+// }
 
 
 void GLEngine::Renderer::Render(GLEngine::Mesh mesh)

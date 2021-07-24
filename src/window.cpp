@@ -80,16 +80,49 @@ void GLEngine::Window::FrameBufferSizeCallBack(GLFWwindow* window, int height, i
 void GLEngine::Window::Close()	
 {
 	glfwSetWindowShouldClose(this->GLWindow, true);
-}	
+}
 
-void GLEngine::Window::ProcessInput()
+
+void GLEngine::Window::ProcessInput(GLEngine::Camera& camera)
 {
+	float CameraSpeed, CurrentFrame, LastFrame;
+
+	GLEngine::SetDeltaTime(0.05, &CameraSpeed, &CurrentFrame, &LastFrame);
+
 	if (glfwGetKey(this->GLWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		this->Close(); 
 		
-	if (glfwGetKey(this->GLWindow, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_J) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		
-	if (glfwGetKey(this->GLWindow, GLFW_KEY_F) == GLFW_PRESS)
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_K) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_W) == GLFW_PRESS)
+		camera.Position += CameraSpeed * camera.Axis.Front;	
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_S) == GLFW_PRESS)
+		camera.Position -= CameraSpeed * camera.Axis.Front;	
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_A) == GLFW_PRESS)
+		camera.Position -= glm::normalize(glm::cross(camera.Axis.Front, camera.Axis.Up) * (CameraSpeed / 1000));	
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_D) == GLFW_PRESS)
+		camera.Position += glm::normalize(glm::cross(camera.Axis.Front, camera.Axis.Up) * (CameraSpeed / 1000));	
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camera.Position.y += 0.1f;
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.Position.y -= 0.1f;
+
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_R) == GLFW_PRESS)
+		camera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(), glm::vec3(), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f)));
+	
+}
+
+void GLEngine::SetDeltaTime(float initialSpeed, float* deltaTime, float* currentFrame, float* lastFrame)
+{
+    *deltaTime = (*currentFrame = (float)glfwGetTime()) - *lastFrame;
+    *lastFrame = *currentFrame;   
 }

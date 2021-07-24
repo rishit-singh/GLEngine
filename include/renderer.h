@@ -110,7 +110,8 @@ namespace GLEngine
 		}
 	};
 
-	class GLEObject
+
+	class GLEObject	
 	{
 	public:
 		enum GLEObjectType
