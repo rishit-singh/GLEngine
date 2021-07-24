@@ -110,6 +110,7 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 	int success;	//	complie/link status
 
 	char* GLCompilerLog = new char[512]; 	
+
 	switch (glStatus)
 	{
 		case GL_COMPILE_STATUS:	

@@ -3,9 +3,23 @@
 #include "window.h"
 #include "vertexarray.h"
 #include "texture.h"
+#include "external/glm/glm.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 namespace GLEngine
 {
+	struct MVPMatrixObject	//	Stores the Model, View and Projection matrices.
+	{
+		glm::mat4 Model,	//	Model matrix
+				View,		//	View Matrix
+				Projection;	//	Projection matrix
+
+		MVPMatrixObject(glm::mat4 model, glm::mat4 view, glm::mat4 projection) : Model(model), View(view), Projection(projection)
+		{
+		}
+	};
+
 	class Mesh	//	3D/2D Mesh
 	{
 	private:
@@ -72,8 +86,8 @@ namespace GLEngine
 
 			bool valid;
 
-			if (valid = this->MeshTexture->IsValid())
-				this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
+			// if (valid = this->MeshTexture->IsValid())
+			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 

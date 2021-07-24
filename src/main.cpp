@@ -115,6 +115,7 @@ void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* sh
 }
 
 
+
 int main()
 {	
 	if (!SetupGLFW())
@@ -150,32 +151,109 @@ int main()
 
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/texture.jpg"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"); 
 
 	Mesh mesh = Mesh(
 		{
-			-0.2f, 0.4f, 0.0f,		0.0f, 1.0f,
-			-0.2f, -0.3f, 0.0f,		0.0f, 0.0f,
-			0.2f, -0.3f, 0.0f, 		1.0f, 0.0f,
-			0.2f, 0.4f, 0.0f, 		1.0f, 1.0f
+			-0.3f, -0.3f, -0.3f,  0.0f, 0.0f,
+			0.3f, -0.3f, -0.3f,  1.0f, 0.0f,
+			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
+			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
+
+			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f,
+			-0.3f, -0.3f, -0.3f,  0.0f, 0.0f,
+			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
+			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
+
+			0.3f,  0.3f,  0.3f,  1.0f, 1.0f,
+			0.3f,  0.3f,  0.3f,  1.0f, 1.0f,
+			-0.3f,  0.3f,  0.3f,  0.0f, 1.0f,
+			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
+
+			-0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+			-0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
+			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			
+			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
+			-0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
+
+			0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
+			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+
+			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			0.3f, -0.3f, -0.3f,  1.0f, 1.0f,
+			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
+			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
+
+			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
+			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
+			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f,
+			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
+
+			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
+			-0.3f,  0.3f,  0.3f,  0.0f, 0.0f,
+			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f
 		},	
 
 		{
-			0, 1, 2,
-			2, 3, 0
+			0, 1, 2, 3, 
+			4, 5, 6, 7, 
+			8, 9, 10, 11, 
+			12, 13, 14, 15, 
+			16, 17, 18, 19, 
+			20, 21, 22, 23, 
+			24, 25, 26, 27, 
+			28, 29, 30, 31, 
+			32, 33, 34, 35
 		}, 
 		
 	shader, &texture);
+
+	glEnable(GL_DEPTH_TEST);
+
+	shader->Compile();
+
+	unsigned int program = glCreateProgram();
+
+	for (int x = 0; x < 2; x++)
+		glAttachShader(program, shader->ShaderIDs[x]);
+
+	glLinkProgram(program);
+	shader->ShaderProgramID = program;
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
 		window.ProcessInput();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
 		glfwSwapInterval(1);
-		
-		Renderer::Render(mesh);
+	
+		MVPMatrixObject mvp = MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+
+		for (float x = 0.0f; x < 10.0f; x += 1.0f)
+		{
+			mvp.Model = glm::rotate(mvp.Model,glm::radians(20 * x), glm::vec3(0.5f, 1.0f, 0.0f));
+			mvp.View = glm::translate(mvp.View, glm::vec3(x, 0.0f, -3.0f));
+			mvp.Projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 100.0f);
+			
+			unsigned int modelLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "model"),
+				viewLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "view"),
+				projectionLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "projection");	
+
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(mvp.Model));
+			glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &(mvp.View[0][0]));
+			glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(mvp.Projection));
+
+			Renderer::Render(mesh);
+		}
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();
