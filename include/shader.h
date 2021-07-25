@@ -57,19 +57,27 @@ namespace GLEngine
 						case 2:
 							glUniformMatrix2fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
 
+							return true;
+
 							break;
 
 						case 3:
 							glUniformMatrix3fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+
+							return true;
 
 							break;
 
 						case 4:
 							glUniformMatrix4fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
 						
+							return true;
+
 							break;
 					}
 			}
+
+			return false;
 		}
 
 		bool SetMatrix4f(const char*, glm::mat4&);
