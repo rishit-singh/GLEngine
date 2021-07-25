@@ -6,6 +6,7 @@
 #include "globals.h"
 #include <unordered_map>
 #include <any> 
+#include <GL/glew.h>
 
 namespace GLEngine
 {
@@ -71,18 +72,7 @@ namespace GLEngine
 			}
 		}
 
-		bool SetMatrix4f(char* uniformName, float* matrix)
-		{
-			Debug->Log(uniformName);
-
-			int location = glGetUniformLocation(this->ShaderProgramID, uniformName);
-
-			Debug->Log("Location retrieved");
-
-			glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
-
-			Debug->Log("Uniform set");
-		}
+		bool SetMatrix4f(const char*, glm::mat4&);
 
 		template<typename T>
 		bool SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
@@ -144,7 +134,7 @@ namespace GLEngine
 						case 1:
 							glUniform1i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
 
-							delete data;
+							// delete data;
 
 							return true;
 							

@@ -87,7 +87,7 @@ void GLEngine::Window::ProcessInput(GLEngine::Camera& camera)
 {
 	float CameraSpeed, CurrentFrame, LastFrame;
 
-	GLEngine::SetDeltaTime(0.05, &CameraSpeed, &CurrentFrame, &LastFrame);
+	GLEngine::SetDeltaTime(0.00005, &CameraSpeed, &CurrentFrame, &LastFrame);
 
 	if (glfwGetKey(this->GLWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		this->Close(); 

@@ -117,6 +117,13 @@ void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* sh
 }
 
 
+static void SetMat4f(char* uniformName, Shader* shader, glm::mat4& matrix)
+{
+	int location = glGetUniformLocation(shader->ShaderProgramID, uniformName);
+
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
 int main()
 {	
 	if (!SetupGLFW())
@@ -216,6 +223,7 @@ int main()
 		
 	shader, &texture);
 
+
 	glEnable(GL_DEPTH_TEST);
 
 	const int radius = 20.0f;
@@ -229,31 +237,19 @@ int main()
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
 		glfwSwapInterval(1);
 	
-		MVPMatrixObject mvp = MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+		mesh.MVPMatrix = new MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 
-		mvp.View = camera.GetViewMatrix();
+		mesh.MVPMatrix->View = camera.GetViewMatrix();
 		
-		for (float x = 0.0f; x < 10.0f; x += 1.0f)
+		for (float x = 0.0f; x < 5.0f; x += 1.0f)
 		{
-			mvp.Model = glm::rotate(mvp.Model, (float)glfwGetTime() * glm::radians(20 * (x + 1)), glm::vec3(0.5f, 1.0f, 0.0f));
-			mvp.Projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 100.0f);
-			mvp.View = glm::translate(mvp.View, glm::vec3(x, 0.0f, -1.0f));
-			
-			unsigned int modelLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "model"),
-				viewLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "view"),
-				projectionLocation = glGetUniformLocation(mesh.MeshShader->ShaderProgramID, "projection");	
+			mesh.MVPMatrix->Model = glm::rotate(mesh.MVPMatrix->Model, (float)glfwGetTime() * glm::radians(20 * (x + 1)), glm::vec3(0.5f, 1.0f, 0.0f));
+			mesh.MVPMatrix->Projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 100.0f);
+			mesh.MVPMatrix->View = glm::translate(mesh.MVPMatrix->View, glm::vec3(x, 0.0f, -2.0f));
 
-			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(mvp.Model));
-			glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &(mvp.View[0][0]));
-			glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(mvp.Projection));
-			
-			// float* model = glm::value_ptr(mvp.Model), 
-			// *view = &(mvp.View[0][0]), 
-			// *projection = glm::value_ptr(mvp.Projection);
-			
-			// mesh.MeshShader->SetMatrix4f("model", model);
-			// mesh.MeshShader->SetMatrix4f("view", view);
-			// mesh.MeshShader->SetMatrix4f("projection", projection);
+			mesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(mesh.MVPMatrix->Model), GL_FLOAT, 4);
+			mesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(mesh.MVPMatrix->View), GL_FLOAT, 4);
+			mesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(mesh.MVPMatrix->Projection), GL_FLOAT, 4);
 			
 			Renderer::Render(mesh);
 		}
@@ -264,3 +260,4 @@ int main()
 	
 	return 0; 
 }
+

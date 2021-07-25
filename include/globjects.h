@@ -9,6 +9,9 @@
 #include <GLFW/glfw3.h> 
 #include "gltypes.h"
 #include "Debug.h"
+#include "external/glm/glm.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 using namespace DebugTools;
 

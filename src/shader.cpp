@@ -154,3 +154,17 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 			break;
 	}
 }
+
+bool GLEngine::Shader::SetMatrix4f(const char* uniformName, glm::mat4& matrix)
+{
+	// GLEngine::Debug->Log(uniformName);
+
+	int location = glGetUniformLocation(this->ShaderProgramID, uniformName);
+
+	// GLEngine::Debug->Log("Location retrieved");
+
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+
+	// GLEngine::Debug->Log("Uniform set")
+}
+

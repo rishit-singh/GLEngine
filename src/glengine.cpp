@@ -60,5 +60,3 @@ void GLEngine::VertexArrayObject::Unbind()
 	this->IsBound = false;
 }
 
-
-

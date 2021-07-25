@@ -5,7 +5,7 @@
 PROJECT     :=  GLEngine
 
 RELEASE		:= -O3
-DEBUG		:= -ggdb3 -Og
+DEBUG		:= -ggdb3 -Og -O0 -DSF_VISIBILITY -fsanitize=address -fvisibility=hidden -fno-strict-aliasing -Wall
 
 STATIC		:= -Bstatic -static-libgcc -static-libstdc++
 DYNAMIC		:= -static-libstdc++
