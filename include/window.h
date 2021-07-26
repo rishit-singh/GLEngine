@@ -13,6 +13,11 @@ namespace GLEngine
 
 	void SetDeltaTime(float, float*, float*, float*);	//	returns the delta time for the given camera speed
 
+	extern Camera WindowCamera;	//	Global camera instance.
+
+	inline bool FirstMouse = true;	//	mouse glitch workaround for mouse event callback function
+
+	inline Point2Df LastMousePosition = Point2Df(1280 / 2, 720 / 2);	//	Real time mouse position
 
 	class Window	
 	{
@@ -27,11 +32,12 @@ namespace GLEngine
 		
 		GLFWwindow* GLWindow;	//	GLFWwindow pointer 		
 
-		static void FrameBufferSizeCallBack(GLFWwindow* window, int height, int width);	// GLFW FrameBufferSizeCallBack function
-	
+		static void FrameBufferSizeCallBack(GLFWwindow*, int, int);	// GLFW FrameBufferSizeCallBack function
+		static void MouseCallback(GLFWwindow*, double, double);	//	Moust event callback
+		static void ScrollCallBack(GLFWwindow*, double, double);
+		
 		void Close();	//	Closes the current window instance 
 		void ProcessInput(Camera&); //	Processes input events
-
 		// Constructors forward declared for global variables depending upon this class to work.
 
 		Window();	

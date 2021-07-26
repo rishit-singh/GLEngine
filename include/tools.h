@@ -33,6 +33,16 @@ namespace GLEngine
 		}
 		
 		template<typename T>
+		static void SetRange(T& value, T min, T max)	//	Sets the value to max or min if it exceeds the range
+		{
+			if (value < min)
+				value = min;
+				
+			if (value > max)
+				value = max;	
+		}
+		
+		template<typename T>
 		static void PrintArray(T* array, unsigned int size)
 		{	
 			for (int x = 0; x < size; x++) 

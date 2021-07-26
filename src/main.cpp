@@ -17,7 +17,7 @@ void GenerateTileMap(Point2D, VertexArrayObject, Shader*);
 void glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam)
 {
 	// ignore non-significant error/warning codes
-	if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
+	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
 
 	std::cout << "---------------" << std::endl;
 	std::cout << "Debug message (" << id << "): " <<  message << std::endl;
@@ -72,57 +72,7 @@ void CreateDebugContext()
 	} 
 }
 
-GLEngine::Camera camera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(), glm::vec3(), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f)));
-
-void DrawRectangle(Vertex2Df dimenions, Vertex2Df location, Shader* shader)
-{
-	float xIncrement = dimenions.Position.X, yIncrement = dimenions.Position.Y;
-
-	VertexArrayObject* VAO = new VertexArrayObject(
-		{
-			location.Position.X, location.Position.Y, 0.0f,		0.0f, 1.f,
-			location.Position.X, location.Position.Y - yIncrement, 0.0f,		0.0f, 0.0f,
-			location.Position.X + xIncrement, location.Position.Y - yIncrement, 0.0,	1.0f, 0.0f,
-			location.Position.X + xIncrement, location.Position.Y, 0.0f,		1.0f, 1.0f
-		},
-
-		{
-			0, 1, 2,
-			2, 3, 0
-		}
-	);
-
-	VAO->AddVertexAttribute(VertexAttributeObject(VAO->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
-	VAO->SetVertexAttributePointer();
-	
-	VAO->Unbind();
-
-	Renderer::Render(VAO, shader);
-
-	delete VAO;
-}
-
-void GenerateTileMap(Vertex2Df dimensions, Vertex2Df initialVertices, Shader* shader)
-{
-	if ((initialVertices.Position.Y > 1 || initialVertices.Position.Y < -1) || (initialVertices.Position.X > 1 || initialVertices.Position.X < -1))	//	Out of range check
-	{
-		Debug->Log("Vertices out of range.");
-
-		return;
-	}
-
-	for (float y = initialVertices.Position.Y; y > -1.0f; y -= dimensions.Position.Y)
-		for (float x = initialVertices.Position.X; x < 1.0f; x += dimensions.Position.X)
-			DrawRectangle(Vertex2Df(Point2Df(dimensions.Position.X, dimensions.Position.Y)), Vertex2Df(Point2Df(x, y)), shader);
-}
-
-
-static void SetMat4f(char* uniformName, Shader* shader, glm::mat4& matrix)
-{
-	int location = glGetUniformLocation(shader->ShaderProgramID, uniformName);
-
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-}
+GLEngine::Camera GLEngine::WindowCamera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f), 0.0f, -90.0f), 45.0f);
 
 int main()
 {	
@@ -140,8 +90,13 @@ int main()
 	Window window = Window("GLEngine App", Point2D(1280, 720), Color(0.2, 0.3, 0.3, 0.5)); 
 
 	SetCurrentContext(window); 
-	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
 
+	glfwSetInputMode(window.GLWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	
+
+	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
+	glfwSetCursorPosCallback(window.GLWindow, Window::MouseCallback);
+	glfwSetScrollCallback(window.GLWindow, Window::ScrollCallBack);
+	
 	Debug->Log<bool>("GLEW Status: ", SetupGLEW()); 
 	CreateDebugContext();
 
@@ -224,7 +179,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
-		window.ProcessInput(camera);
+		window.ProcessInput(GLEngine::WindowCamera);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -233,13 +188,13 @@ int main()
 	
 		mesh.MVPMatrix = new MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 
-		mesh.MVPMatrix->View = camera.GetViewMatrix();
+		mesh.MVPMatrix->Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
+		mesh.MVPMatrix->View = GLEngine::WindowCamera.GetViewMatrix();
 		
 		for (float x = 0.0f; x < 5.0f; x += 1.0f)
 		{
-			mesh.MVPMatrix->Model = glm::rotate(mesh.MVPMatrix->Model, (float)glfwGetTime() * glm::radians(20 * (x + 1)), glm::vec3(0.5f, 1.0f, 0.0f));
-			mesh.MVPMatrix->Projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 100.0f);
-			mesh.MVPMatrix->View = glm::translate(mesh.MVPMatrix->View, glm::vec3(x, 0.0f, -2.0f));
+			mesh.MVPMatrix->Model = glm::translate(mesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
+			mesh.MVPMatrix->Model = glm::rotate(mesh.MVPMatrix->Model, glm::radians(20 * x), glm::vec3(1.0f, 0.3f, 0.5f));
 
 			mesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(mesh.MVPMatrix->Model), GL_FLOAT, 4);
 			mesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(mesh.MVPMatrix->View), GL_FLOAT, 4);

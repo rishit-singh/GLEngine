@@ -8,7 +8,7 @@ namespace GLEngine
 {
 	struct MVPMatrixObject	//	Stores the Model, View and Projection matrices.
 	{
-		glm::mat4 Model,	//	Model matrix
+		glm::mat4 Model { 1.0f },	//	Model matrix
 				View,		//	View Matrix
 				Projection;	//	Projection matrix
 

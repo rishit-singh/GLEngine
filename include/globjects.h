@@ -52,9 +52,10 @@ namespace GLEngine
 
 	struct Point2Df
 	{	
-		float X, Y; 
+		float X { 0.0f }, 
+			Y { 0.0f }; 
 
-		Point2Df() : X(0), Y(0)
+		Point2Df()
 		{
 		}
 
