@@ -82,6 +82,28 @@ namespace GLEngine
 		{
 			return Point2Df(Point2Df(this->X / rhs.X, this->Y / rhs.Y)); 
 		}	
+
+		bool operator ==(const Point2Df rhs)
+		{
+			return (
+				this->X == rhs.X &&
+				this->Y == rhs.Y
+			);	
+		}
+
+		bool operator !=(const Point2Df rhs)
+		{
+			return (
+				this->X != rhs.X ||
+				this->Y != rhs.Y
+			);	
+		}
+		
+		void operator =(const float rhs[2])
+		{
+			this->X = rhs[0];
+			this->Y = rhs[1];
+		}
 	}; 
 
 	struct Point3D	// Stores a 3D Point
@@ -121,13 +143,23 @@ namespace GLEngine
 	struct Point3Df	// Stores a 3D Point
 	{
 	public:
-		float X, Y, Z; 
+		float X { 0.0f }, 
+			Y { 0.0f }, 
+			Z { 0.0f }; 
 
-		Point3Df() : X(0), Y(0), Z(0)
+		Point3Df() : X(0.0f), Y(0.0f), Z(0.0f)
 		{
 		}
-		
+
 		Point3Df(float x, float y, float z) : X(x), Y(y), Z(z)
+		{
+		}
+
+		Point3Df(float x, float y) : X(x), Y(y)
+		{
+		}
+
+		Point3Df(float x) : X(x)
 		{
 		}
 
@@ -154,6 +186,31 @@ namespace GLEngine
 		Point3Df operator /(const Point3D& rhs)
 		{
 			return Point3Df(this->X / rhs.X, this->Y / rhs.Y, this->Z / rhs.Z);
+		}
+
+		void operator =(const float vertices[3])
+		{
+			this->X = vertices[0];
+			this->Y = vertices[1];
+			this->Z = vertices[2];
+		}
+
+		bool operator ==(const Point3Df& rhs)
+		{
+			return (
+				rhs.X == this->X &&
+				rhs.Y == this->Y &&
+				rhs.Z == this->Z
+			);	
+		}
+
+		bool operator !=(const Point3Df& rhs)
+		{
+			return (
+				rhs.X != this->X ||
+				rhs.Y != this->Y ||
+				rhs.Z != this->Z
+			);	
 		}
 	}; 
 
@@ -214,7 +271,7 @@ namespace GLEngine
 
 	struct Vertex3D
 	{
-		Point3D Position; 
+		Point3D Position;
 
 		Color VertexColor;
 
@@ -233,20 +290,35 @@ namespace GLEngine
 
 	struct Vertex3Df
 	{
-		Point3Df Position; 
+		Point3Df Position { 0.0f }; 
 
 		Color VertexColor;
 
-		Vertex3Df() : Position(Point3Df()), VertexColor(Color())
+		Point2Df TextureCoordinates;
+
+		Vertex3Df() : Position(Point3Df()), VertexColor(Color()), TextureCoordinates(Point2Df())
 		{
 		}
 
-		Vertex3Df(Point3Df position) : Position(position), VertexColor(Color())
+		Vertex3Df(Point3Df position) : Position(position), VertexColor(Color()), TextureCoordinates(Point2Df())
 		{
 		}
 
-		Vertex3Df(Point3Df position, Color color) : Position(position), VertexColor(color)
+		Vertex3Df(Point3Df position, Color color) : Position(position), VertexColor(color), TextureCoordinates(Point2Df())
 		{
+		}
+
+		Vertex3Df(Point3Df position, Point2Df textureCoordinates) : Position(position), VertexColor(Color()), TextureCoordinates(textureCoordinates)
+		{
+		}
+
+		Vertex3Df(Point3Df position, Color color, Point2Df textureCoordinates) : Position(position), VertexColor(color), TextureCoordinates(textureCoordinates)
+		{
+		}
+
+		Vertex3Df(const float position[3], Color color, Point2Df textureCoordinates) : VertexColor(color), TextureCoordinates(textureCoordinates)
+		{
+			this->Position = position;
 		}
 	}; 
 	// Contains data about a window.

@@ -3,6 +3,8 @@
 #include "glengine.h"
 #include "blending.h"
 #include "fileio.h"
+#include <algorithm>
+
 
 using namespace GLEngine; 
 
@@ -72,7 +74,8 @@ void CreateDebugContext()
 	} 
 }
 
-GLEngine::Camera GLEngine::WindowCamera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f), 0.0f, -90.0f), 45.0f);
+// GLEngine::Camera GLEngine::WindowCamera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f), 0.0f, -90.0f), 45.0f);
+GLEngine::Camera GLEngine::WindowCamera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.1f), glm::vec3(0.0, 0.1f, 0.0f), 0.0f, -90.0f), 45.0f);
 
 int main()
 {	
@@ -81,7 +84,7 @@ int main()
 		Debug->Log("Failed to setup GLFW. "); 
 
 		return -1; 
-	} 
+	}
 
 	SetWindowHints(4, 6);
 	
@@ -107,75 +110,32 @@ int main()
 	blender.Enable(); 
 	blender.ApplyBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	char* VertexShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/vertexshader.vert"), 
-		*FragmentShaderString = FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/fragmentshader.frag"); 
-
-	GLEngine::Shader* shader = new GLEngine::Shader(VertexShaderString, FragmentShaderString, true	);
-
+	GLEngine::Shader* shader = new GLEngine::Shader(FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::VertexShader]), 
+							FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::FragmentShader]), true);
 	Debug->Log("Shader compiled: ", shader->Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/dirt.jpg"); 
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"); 
+	Texture texture1 = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"); 
 
-	Mesh mesh = Mesh(
-		{
-			-0.3f, -0.3f, -0.3f,  0.0f, 0.0f,
-			0.3f, -0.3f, -0.3f,  1.0f, 0.0f,
-			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
-			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
-			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f,
-			-0.3f, -0.3f, -0.3f,  0.0f, 0.0f,
 
-			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
-			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
-			0.3f,  0.3f,  0.3f,  1.0f, 1.0f,
-			0.3f,  0.3f,  0.3f,  1.0f, 1.0f,
-			-0.3f,  0.3f,  0.3f,  0.0f, 1.0f,
-			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
-			
-			-0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			-0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
-			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
-			-0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			
-			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
-			0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
-			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			
-			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			0.3f, -0.3f, -0.3f,  1.0f, 1.0f,
-			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
-			0.3f, -0.3f,  0.3f,  1.0f, 0.0f,
-			-0.3f, -0.3f,  0.3f,  0.0f, 0.0f,
-			-0.3f, -0.3f, -0.3f,  0.0f, 1.0f,
-			
-			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f,
-			0.3f,  0.3f, -0.3f,  1.0f, 1.0f,
-			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			0.3f,  0.3f,  0.3f,  1.0f, 0.0f,
-			-0.3f,  0.3f,  0.3f,  0.0f, 0.0f,
-			-0.3f,  0.3f, -0.3f,  0.0f, 1.0f
-		},	
+	GLEObject object = GLEObject(Mesh(new VertexArrayObject(ShapeBufferGeneration::GenerateCuboid(Point3Df(0.0f, 0.0f, 0.0f), Point3Df(10.0f, 1.0f, 10.0f))), shader, &texture));
 
-		{
-			0, 1, 2, 3, 4, 5, 
-			6, 7, 8, 9, 10, 11, 
-			12, 13, 14, 15, 16, 17, 
-			18, 19, 20, 21, 22, 23, 
-			24, 25, 26, 27, 28, 29, 
-			30, 31, 32, 33, 34, 35
-		}, 
-		
-	shader, &texture);
+	object.CreateObject({ 0.7f, 0.7f, 0.0f }, { 0.5f, 1.0f, 0.0f }, &texture1, GLEObject::Rectangle);
+	// object.CreateObject(Point3Df(0.7f, 0.7f, 0.0f), Point3Df(0.5f, 0.5f, 1.0f), GLEObject::Cuboid);
+ 
+	// object.CreateObject(Mesh(new VertexArrayObject(ShapeBufferGeneration::GenerateCuboid(Point3Df(1.5f, 0.5f, 0.0f), Point3Df(0.5f, 0.5f, 0.5f))), shader, &texture1));
+ 
+	// object.CreateObject(Mesh(new VertexArrayObject(ShapeBufferGeneration::GenerateCuboid(Point3Df(2.5f, 0.5f, 0.0f), Point3Df(0.5f, 0.5f, 0.5f))), shader, &texture1));
+
+	General::PrintArray<float>(object.ObjectMesh.VertexArrayObjects.back()->VertexBufferObjects.back().VertexArray,
+						object.ObjectMesh.VertexArrayObjects.back()->VertexBufferObjects.back().VertexArraySize);
 
 
 	glEnable(GL_DEPTH_TEST);
 
 	const int radius = 20.0f;
+
+	float x = 0.1f;
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -185,28 +145,35 @@ int main()
 
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
 		glfwSwapInterval(1);
-	
-		mesh.MVPMatrix = new MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
-
-		mesh.MVPMatrix->Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
-		mesh.MVPMatrix->View = GLEngine::WindowCamera.GetViewMatrix();
 		
-		for (float x = 0.0f; x < 5.0f; x += 1.0f)
-		{
-			mesh.MVPMatrix->Model = glm::translate(mesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
-			mesh.MVPMatrix->Model = glm::rotate(mesh.MVPMatrix->Model, glm::radians(20 * x), glm::vec3(1.0f, 0.3f, 0.5f));
+		object.ObjectMesh.MVPMatrix = new MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+		object.ObjectMesh.MVPMatrix->Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
+		object.ObjectMesh.MVPMatrix->View = GLEngine::WindowCamera.GetViewMatrix();
+		
+		// for (float x = 0.0f; x < 5.0f; x += 1.0f)
+		// {
+		// 	object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
+		// 	object.ObjectMesh.MVPMatrix->Model = glm::rotate(object.ObjectMesh.MVPMatrix->Model, (float)glfwGetTime() * glm::radians(20 * x), glm::vec3(1.0f, 0.3f, 0.5f));
 
-			mesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(mesh.MVPMatrix->Model), GL_FLOAT, 4);
-			mesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(mesh.MVPMatrix->View), GL_FLOAT, 4);
-			mesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(mesh.MVPMatrix->Projection), GL_FLOAT, 4);
+		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
+		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
+		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
 			
-			Renderer::Render(mesh);
-		}
+		// 	Renderer::Render(object);
+		// }
+		
+		object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
+		// object.ObjectMesh.MVPMatrix->Model = glm::rotate(object.ObjectMesh.MVPMatrix->Model, glm::radians(20), glm::vec3(1.0f, 0.3f, 0.5f));
+
+		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
+		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
+		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
+			
+		Renderer::Render(object);
 
 		glfwSwapBuffers(window.GLWindow);
-		glfwPollEvents();
+		glfwPollEvents();	
 	}
 	
 	return 0; 
 }
-

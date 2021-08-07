@@ -4,6 +4,7 @@
 
 #include "globjects.h"
 #include "globals.h"
+#include "fileio.h"
 #include <unordered_map>
 #include <any> 
 #include <GL/glew.h>
@@ -245,6 +246,6 @@ namespace GLEngine
 		{
 			this->DeleteShaders();
 		}
-	}; 
+	};
 }	
 

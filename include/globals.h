@@ -13,5 +13,13 @@ using namespace DebugTools;
 
 namespace GLEngine
 {
+	enum ResourceType 
+	{
+		Shaders,
+		Textures
+	};
+
 	extern Debugger* Debug;	//	global Debugger instance 
+
+	extern char DefaultPaths[2][2][1024];	//	Default paths for the engine resources
 };

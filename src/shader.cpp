@@ -5,7 +5,7 @@
 GLenum* GLEngine::ShaderTypeGLenums = new GLenum[2] {
 	GL_VERTEX_SHADER, 
 	GL_FRAGMENT_SHADER
-};	
+};
 
 bool GLEngine::Shader::Enable()
 {

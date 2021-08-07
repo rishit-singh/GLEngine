@@ -7,10 +7,11 @@
 #include <vector>
 #include "renderer.h"
 
-using namespace DebugTools; 
+using namespace DebugTools;
 
 namespace GLEngine
 {
+
 	extern void SetWindowHints(unsigned int, unsigned int);	//	Sets up the OpenGL version hint
 	extern void SetCurrentContext(Window);	//	Sets the provided instance of a GLFWwindow as the current context
 	extern bool SetupGLEW();	//	Sets up the GLEW library

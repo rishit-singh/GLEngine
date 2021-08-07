@@ -17,7 +17,7 @@ namespace GLEngine
 
 	inline bool FirstMouse = true;	//	mouse glitch workaround for mouse event callback function
 
-	inline Point2Df LastMousePosition = Point2Df(1280 / 2, 720 / 2);	//	Real time mouse position
+	inline Point2Df LastMousePosition = Point2Df(800 / 2, 600 / 2);	//	Real time mouse position
 
 	class Window	
 	{

@@ -217,3 +217,4 @@ void GLEngine::SetBufferData(unsigned int bufferID, float* vertexArray, unsigned
 	glBufferData(GL_ARRAY_BUFFER, arraySize * sizeof(float), vertexArray, GL_STATIC_DRAW);	//	Adds data to the buffer
 	glBindBuffer(GL_ARRAY_BUFFER, 0);	
 }
+

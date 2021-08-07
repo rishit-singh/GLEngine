@@ -33,7 +33,7 @@ namespace GLEngine
 			case VertexBuffer:
 				glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 				glBufferData(GL_ARRAY_BUFFER, size * sizeof(T), bufferData, GL_STATIC_DRAW);
-
+				
 				return true;
 
 			case IndexBuffer:

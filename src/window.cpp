@@ -1,7 +1,6 @@
 #include "window.h"
 #include "tools.h"
 #include "Debug.h"
-
 // constructors to be forward declared.
 
 std::vector<GLEngine::Window*> GLEngine::AllocatedWindows = std::vector<GLEngine::Window*>();
@@ -119,6 +118,10 @@ void GLEngine::Window::ProcessInput(GLEngine::Camera& camera)
 	if (glfwGetKey(this->GLWindow, GLFW_KEY_R) == GLFW_PRESS)
 		camera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f), 0.0f, -90.0f), 45.0f);
 	
+	if (glfwGetKey(this->GLWindow, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		camera = GLEngine::Camera(0, glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), GLEngine::CameraAxis(glm::vec3(0.0f, 0.0f, -0.05f), glm::vec3(0.0, 0.05f, 0.0f), 0.0f, -90.0f), 45.0f);
+	}
 }
 
 void GLEngine::SetDeltaTime(float initialSpeed, float* deltaTime, float* currentFrame, float* lastFrame)
@@ -160,6 +163,11 @@ void GLEngine::Window::MouseCallback(GLFWwindow* window, double xPos, double yPo
 	frontTemp.z = glm::sin(glm::radians(GLEngine::WindowCamera.Axis.Yaw)) * glm::cos(glm::radians(GLEngine::WindowCamera.Axis.Pitch));
 
 	GLEngine::WindowCamera.Axis.Front = glm::normalize(frontTemp);
+
+	Debug->Log("GLEngine::FirstMouse", GLEngine::FirstMouse);
+
+	Debug->Log("CameraX", GLEngine::WindowCamera.Axis.Pitch);
+	Debug->Log("CameraY", GLEngine::WindowCamera.Axis.Yaw);
 }
 
 void GLEngine::Window::ScrollCallBack(GLFWwindow* window, double xOffset, double yOffset)
