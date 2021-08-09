@@ -197,8 +197,7 @@ namespace GLEngine
 
 		unsigned int ID;	//	Object ID
 
-		GLEObjectType Type;	//	Current object type		
-		
+		GLEObjectType Type;	//	Current object type				
 		
 		Mesh ObjectMesh;	//	Primary mesh / 0th element of the MeshArray
 
@@ -218,6 +217,7 @@ namespace GLEngine
 		GLEObject(float*);
 		GLEObject(Mesh);
 		GLEObject(Mesh, GLEObjectType);
+		GLEObject(std::vector<GLEngine::VertexBufferObject>, std::vector<GLEngine::Texture*>);
 		GLEObject(std::vector<Vertex3Df>); 
 		GLEObject(std::vector<Vertex3Df>, GLEObjectType); 
 		GLEObject(std::vector<Vertex3Df>, GLEObjectType, Shader*);
@@ -272,6 +272,8 @@ namespace GLEngine
 		static VertexBufferObject GenerateCuboid(GLEngine::Point3Df, GLEngine::Point3Df);		//	Generates a vertex buffer object for a cuboid with provided vertices at the provided location
 		static std::vector<float> GenerateCuboidVertices(GLEngine::Point3Df, GLEngine::Point3Df);		//	Generates a vertex buffer object for a cuboid with provided vertices at the provided location
 		static std::vector<Vertex3Df> GenerateCuboidVertexObjects(GLEngine::Point3Df, GLEngine::Point3Df);		//	Generates a vertex buffer object for a cuboid with provided vertices at the provided location
+		static std::vector<VertexBufferObject> GenerateCuboidFaces(GLEngine::Point3Df, GLEngine::Point3Df);		//	Generates a vertex buffer objects of rectangles making up a cuboid.
+		// static std::vector<VertexBufferObject> GenerateCuboidFaces(GLEngine::Point3Df, GLEngine::Point3Df);		//	Generates a vertex buffer objects of rectangles making up a cuboid with a specific texture for each rectangle.
 	};
 
 	class Renderer

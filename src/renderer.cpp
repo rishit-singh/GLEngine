@@ -199,6 +199,25 @@ GLEngine::GLEObject::GLEObject(std::vector<GLEngine::Vertex3Df> vertices) : Mesh
 		this->ObjectMesh = this->MeshArray.back();
 }
 
+GLEngine::GLEObject::GLEObject(std::vector<GLEngine::VertexBufferObject> vertexBufferObjects, std::vector<GLEngine::Texture*> textures)
+{
+	int sizeTemp = vertexBufferObjects.size();
+
+	for (int x = 0; x < sizeTemp; x++)
+		this->MeshArray.push_back(Mesh(
+			new VertexArrayObject(vertexBufferObjects.at(x)),
+			new Shader(
+				GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
+				GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]),
+				true
+			),
+			textures.at(x)
+		));
+
+	this->ObjectMesh = this->MeshArray.front();
+}
+
+
 void GLEngine::Mesh::Update(unsigned int id)
 {
 	this->VertexArrayObjects.at(id)->SetVertexAttributePointer();
@@ -250,7 +269,8 @@ void GLEngine::GLEObject::CreateObject(std::vector<GLEngine::Vertex3Df> vertices
 
 	Shader* shader = new Shader(
 		GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
-		GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader])
+		GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]),
+		true
 	);
 
 	Texture texture = Texture(GLEngine::DefaultPaths[1][0]);
@@ -545,6 +565,53 @@ std::vector<GLEngine::Vertex3Df> GLEngine::ShapeBufferGeneration::GenerateCuboid
 		GLEngine::Vertex3Df(GLEngine::Point3Df(location.X + dimensions.X, location.Y - dimensions.Y, location.Z - dimensions.Z), GLEngine::Point2Df(0.0f, 0.0f)),
 		GLEngine::Vertex3Df(GLEngine::Point3Df(location.X + dimensions.X, location.Y - dimensions.Y, location.Z), GLEngine::Point2Df(1.0f, 0.0f)),
 		GLEngine::Vertex3Df(GLEngine::Point3Df(location.X + dimensions.X, location.Y, location.Z), GLEngine::Point2Df(1.0f, 1.0f))
+	};
+}
+
+std::vector<GLEngine::VertexBufferObject> GLEngine::ShapeBufferGeneration::GenerateCuboidFaces(GLEngine::Point3Df location, GLEngine::Point3Df dimensions)
+{
+	return {
+		VertexBufferObject({
+			location.X, location.Y, location.Z, 					0.0f, 1.0f,	//	Front
+			location.X, location.Y - dimensions.Y, location.Z,		0.0f, 0.0f,
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z,	1.0f, 0.0f,
+			location.X + dimensions.X, location.Y, location.Z, 		1.0f, 1.0f
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
+	
+		VertexBufferObject({
+			location.X, location.Y, location.Z - dimensions.Z,		0.0f, 1.0f,	//	Back
+			location.X, location.Y - dimensions.Y, location.Z - dimensions.Z,		0.0f, 0.0f,
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z - dimensions.Z,	1.0f, 0.0f,
+			location.X + dimensions.X, location.Y, location.Z - dimensions.Z, 	1.0f, 1.0f
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
+
+		VertexBufferObject({
+			location.X, location.Y, location.Z - dimensions.Z, 		0.0f, 1.0f,	//	Top
+			location.X, location.Y, location.Z,						0.0f, 0.0f,
+			location.X + dimensions.X, location.Y, location.Z,		1.0f, 0.0f,
+			location.X + dimensions.X, location.Y, location.Z - dimensions.Z,	1.0f, 1.0f
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
+
+		VertexBufferObject({
+			location.X, location.Y - dimensions.Y, location.Z - dimensions.Z, 		0.0f, 1.0f,
+			location.X, location.Y - dimensions.Y, location.Z,		0.0f, 0.0f,
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z,	1.0f, 0.0f,
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z - dimensions.Z, 	1.0f, 1.0f
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
+
+		VertexBufferObject({
+			location.X, location.Y, location.Z - dimensions.Z,		0.0f, 1.0f,
+			location.X, location.Y - dimensions.Y, location.Z - dimensions.Z, 		0.0f, 0.0f,	//	Left
+			location.X, location.Y - dimensions.Y, location.Z,		1.0f, 0.0f,
+			location.X, location.Y, location.Z, 	1.0f, 1.0f
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
+
+		VertexBufferObject({
+			location.X + dimensions.X, location.Y, location.Z - dimensions.Z, 					0.0f, 1.0f,	//	Right
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z - dimensions.Z,		0.0f, 0.0f,
+			location.X + dimensions.X, location.Y - dimensions.Y, location.Z,		1.0f, 0.0f,
+			location.X + dimensions.X, location.Y, location.Z, 		1.0f, 1.0f	
+		}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]),
 	};
 }
 
