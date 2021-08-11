@@ -94,10 +94,10 @@ int main()
 
 	SetCurrentContext(window); 
 
-	glfwSetInputMode(window.GLWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	
+	// glfwSetInputMode(window.GLWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	
 
 	glfwSetFramebufferSizeCallback(window.GLWindow, Window::FrameBufferSizeCallBack); 
-	glfwSetCursorPosCallback(window.GLWindow, Window::MouseCallback);
+	// glfwSetCursorPosCallback(window.GLWindow, Window::MouseCallback);
 	glfwSetScrollCallback(window.GLWindow, Window::ScrollCallBack);
 	
 	Debug->Log<bool>("GLEW Status: ", SetupGLEW()); 
@@ -110,32 +110,22 @@ int main()
 	blender.Enable(); 
 	blender.ApplyBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	GLEngine::Shader* shader = new GLEngine::Shader(FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::VertexShader]), 
+	GLEngine::Shader shader = GLEngine::Shader(FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::VertexShader]), 
 							FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::FragmentShader]), true);
-	Debug->Log("Shader compiled: ", shader->Verify());
+	
+	Debug->Log("Shader compiled: ", shader.Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"); 
-	Texture texture1 = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"); 
-	Texture face = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/front.png");
-	Texture top = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/top.png");
-	Texture left = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/left.png");
-	Texture right = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/right.png");
-	Texture back = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/back.png");
-	Texture torso = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/torso.png");
-	Texture arm = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/arm.png");
-	Texture leg = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/leg.png");
-
-	// GLEObject object = GLEObject(ShapeBufferGeneration::GenerateCuboidFaces({ 0.0f, 1.0f, -1.0f }, { 0.1f, 0.1f, 0.1f }), {
-	// 	&face,
-	// 	&top,
-	// 	&left,
-	// 	&right,
-	// 	&back,
-	// 	&texture1
-	// });
+	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"), texture1 = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"),
+	face = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/front.png"),
+	top = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/top.png"),
+	left = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/left.png"),
+	right = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/right.png"),
+	back = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/back.png"),
+	torso = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/torso.png"),
+	arm = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/arm.png"),
+	leg = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/leg.png");
 
 	std::vector<float> CuboidVertices = ShapeBufferGeneration::GenerateCuboidVertices({ 0.0f, 1.0f, 0.0f }, { 0.15f, 0.15f, 0.15f });
-
 	
 	GLEObject object = GLEObject(Mesh(new VertexArrayObject(
 		{
@@ -160,28 +150,28 @@ int main()
 		CuboidVertices.at(45), CuboidVertices.at(46), CuboidVertices.at(47), CuboidVertices.at(48), CuboidVertices.at(49), 
 		CuboidVertices.at(50), CuboidVertices.at(51), CuboidVertices.at(52), CuboidVertices.at(53), CuboidVertices.at(54), 
 		CuboidVertices.at(55), CuboidVertices.at(56), CuboidVertices.at(57), CuboidVertices.at(58), CuboidVertices.at(59), 		
-	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &back), GLEngine::GLEObject::Rectangle);
+	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &top), GLEngine::GLEObject::Rectangle);
 
 	object.CreateObject(Mesh(new VertexArrayObject({
 		CuboidVertices.at(60), CuboidVertices.at(61), CuboidVertices.at(62), CuboidVertices.at(63), CuboidVertices.at(64), 
 		CuboidVertices.at(65), CuboidVertices.at(66), CuboidVertices.at(67), CuboidVertices.at(68), CuboidVertices.at(69), 
 		CuboidVertices.at(70), CuboidVertices.at(71), CuboidVertices.at(72), CuboidVertices.at(73), CuboidVertices.at(74), 
 		CuboidVertices.at(75), CuboidVertices.at(76), CuboidVertices.at(77), CuboidVertices.at(78), CuboidVertices.at(79), 		
-	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &back), GLEngine::GLEObject::Rectangle);
+	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &top), GLEngine::GLEObject::Rectangle);
 
 	object.CreateObject(Mesh(new VertexArrayObject({
 		CuboidVertices.at(80), CuboidVertices.at(81), CuboidVertices.at(82), CuboidVertices.at(83), CuboidVertices.at(84), 
 		CuboidVertices.at(85), CuboidVertices.at(86), CuboidVertices.at(87), CuboidVertices.at(88), CuboidVertices.at(89), 
 		CuboidVertices.at(90), CuboidVertices.at(91), CuboidVertices.at(92), CuboidVertices.at(93), CuboidVertices.at(94), 
 		CuboidVertices.at(95), CuboidVertices.at(96), CuboidVertices.at(97), CuboidVertices.at(98), CuboidVertices.at(99), 		
-	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &back), GLEngine::GLEObject::Rectangle);
+	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &left), GLEngine::GLEObject::Rectangle);
 
 	object.CreateObject(Mesh(new VertexArrayObject({
 		CuboidVertices.at(100), CuboidVertices.at(101), CuboidVertices.at(102), CuboidVertices.at(103), CuboidVertices.at(104), 
 		CuboidVertices.at(105), CuboidVertices.at(106), CuboidVertices.at(107), CuboidVertices.at(108), CuboidVertices.at(109), 
 		CuboidVertices.at(110), CuboidVertices.at(111), CuboidVertices.at(112), CuboidVertices.at(113), CuboidVertices.at(114), 
 		CuboidVertices.at(115), CuboidVertices.at(116), CuboidVertices.at(117), CuboidVertices.at(118), CuboidVertices.at(119), 		
-	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &back), GLEngine::GLEObject::Rectangle);
+	}, GLEngine::ShapeBufferGeneration::GenericIndexBuffers[GLEngine::GLEObject::Rectangle]), shader, &right), GLEngine::GLEObject::Rectangle);
 
 	object.CreateObject({
 		-0.04f, 0.85f, 0.0f
@@ -213,23 +203,9 @@ int main()
 		0.12f, 0.3f, 0.1f
 	}, &leg, GLEObject::Cuboid);
 
-
-	// object.CreateObject({ 0.7f, 0.7f, 0.0f }, { 0.5f, 1.0f, 0.0f }, &texture1, GLEObject::Rectangle);
-	// object.CreateObject(Point3Df(0.7f, 0.7f, 0.0f), Point3Df(0.5f, 0.5f, 1.0f), GLEObject::Cuboid);
- 
-	// object.CreateObject(Mesh(new VertexArrayObject(ShapeBufferGeneration::GenerateCuboid(Point3Df(1.5f, 0.5f, 0.0f), Point3Df(0.5f, 0.5f, 0.5f))), shader, &texture1));
- 
-	// object.CreateObject(Mesh(new VertexArrayObject(ShapeBufferGeneration::GenerateCuboid(Point3Df(2.5f, 0.5f, 0.0f), Point3Df(0.5f, 0.5f, 0.5f))), shader, &texture1));
-
-	General::PrintArray<float>(object.ObjectMesh.VertexArrayObjects.back()->VertexBufferObjects.back().VertexArray,
-						object.ObjectMesh.VertexArrayObjects.back()->VertexBufferObjects.back().VertexArraySize);
-
-
 	glEnable(GL_DEPTH_TEST);
 
 	const int radius = 20.0f;
-
-	float x = 0.1f;
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -244,30 +220,20 @@ int main()
 		object.ObjectMesh.MVPMatrix->Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
 		object.ObjectMesh.MVPMatrix->View = GLEngine::WindowCamera.GetViewMatrix();
 		
-		// for (float x = 0.0f; x < 5.0f; x += 1.0f)
-		// {
-		// 	object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
-		// 	object.ObjectMesh.MVPMatrix->Model = glm::rotate(object.ObjectMesh.MVPMatrix->Model, (float)glfwGetTime() * glm::radians(20 * x), glm::vec3(1.0f, 0.3f, 0.5f));
-
-		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
-		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
-		// 	object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
-			
-		// 	Renderer::Render(object);
-		// }
-		
-		object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(x, 0.0f, -2.0f));
+		object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(0.1f, 0.0f, -2.0f));
 		// object.ObjectMesh.MVPMatrix->Model = glm::rotate(object.ObjectMesh.MVPMatrix->Model, glm::radians(20), glm::vec3(1.0f, 0.3f, 0.5f));
 
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
+		object.ObjectMesh.MeshShader.SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
+		object.ObjectMesh.MeshShader.SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
+		object.ObjectMesh.MeshShader.SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
 			
 		Renderer::Render(object);
 
 		glfwSwapBuffers(window.GLWindow);
 		glfwPollEvents();	
 	}
+
+	object.Delete();
 	
 	return 0; 
 }
