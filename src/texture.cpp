@@ -52,11 +52,11 @@ void GLEngine::Texture::Unbind()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-bool GLEngine::Texture::SendToShader(GLEngine::Shader* shader)
+bool GLEngine::Texture::SendToShader(GLEngine::Shader shader)
 {
 	//	Sends the current bound texture slot as uTextureSlot to the provided shader
 	//	ToDo:	Pass texture slots
-	return shader->SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { (int)this->ID }, 1);
+	return shader.SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { (int)this->ID }, 1);
 }
 
 bool GLEngine::Texture::IsValid()

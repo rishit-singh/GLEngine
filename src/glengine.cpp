@@ -5,7 +5,6 @@ GLenum* GLEngine::GLObjectEnums = new GLenum[1] {
 	GL_TRIANGLES
 }; 
 
-
 void GLEngine::SetWindowHints(unsigned int major, unsigned int minor)
 {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
@@ -53,12 +52,9 @@ bool GLEngine::SetupGLFW()
 	return true;
 }
 
-
 void GLEngine::VertexArrayObject::Unbind()
 {
 	glBindVertexArray(0);
 	this->IsBound = false;
 }
-
-
 

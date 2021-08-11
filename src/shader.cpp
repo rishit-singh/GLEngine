@@ -5,7 +5,7 @@
 GLenum* GLEngine::ShaderTypeGLenums = new GLenum[2] {
 	GL_VERTEX_SHADER, 
 	GL_FRAGMENT_SHADER
-};	
+};
 
 bool GLEngine::Shader::Enable()
 {
@@ -110,6 +110,7 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 	int success;	//	complie/link status
 
 	char* GLCompilerLog = new char[512]; 	
+
 	switch (glStatus)
 	{
 		case GL_COMPILE_STATUS:	
@@ -153,3 +154,17 @@ void GLEngine::Shader::CheckErrors(unsigned int program, GLenum glStatus)
 			break;
 	}
 }
+
+bool GLEngine::Shader::SetMatrix4f(const char* uniformName, glm::mat4& matrix)
+{
+	// GLEngine::Debug->Log(uniformName);
+
+	int location = glGetUniformLocation(this->ShaderProgramID, uniformName);
+
+	// GLEngine::Debug->Log("Location retrieved");
+
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+
+	// GLEngine::Debug->Log("Uniform set")
+}
+

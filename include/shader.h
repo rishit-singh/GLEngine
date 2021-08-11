@@ -4,8 +4,10 @@
 
 #include "globjects.h"
 #include "globals.h"
+#include "fileio.h"
 #include <unordered_map>
 #include <any> 
+#include <GL/glew.h>
 
 namespace GLEngine
 {
@@ -41,8 +43,45 @@ namespace GLEngine
 		unsigned int* Compile();	//	Compiles all the shaders at once if eligible
 		unsigned int Link();	//	Links the compiled shaders into one shader program						
 
+
 		// template<typename T>
 		// bool SetUniformValue(char*, unsigned int, T*, int); 	//	Gets the specified uniform location from the current linked shader program
+
+		template<typename T>
+		bool SetSquareMatrix(char* uniformName, T* matrix, unsigned int glType, int size)
+		{
+			switch (glType)
+			{
+				case GL_FLOAT:
+					switch (size)
+					{					
+						case 2:
+							glUniformMatrix2fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+
+							return true;
+
+							break;
+
+						case 3:
+							glUniformMatrix3fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+
+							return true;
+
+							break;
+
+						case 4:
+							glUniformMatrix4fv(this->GetUniformLocation(uniformName, this->ShaderProgramID), 1, GL_FALSE, matrix);
+						
+							return true;
+
+							break;
+					}
+			}
+
+			return false;
+		}
+
+		bool SetMatrix4f(const char*, glm::mat4&);
 
 		template<typename T>
 		bool SetUniformValue(char* uniformName, unsigned int glType, T* data, int size)
@@ -104,7 +143,7 @@ namespace GLEngine
 						case 1:
 							glUniform1i(this->GetUniformLocation(uniformName, this->ShaderProgramID), data[0]); 
 
-							delete data;
+							// delete data;
 
 							return true;
 							
@@ -207,6 +246,6 @@ namespace GLEngine
 		{
 			this->DeleteShaders();
 		}
-	}; 
+	};
 }	
 

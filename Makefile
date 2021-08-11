@@ -14,7 +14,7 @@ UNDEF		:=
 BUILD		:= $(DEBUG)
 LINKTYPE	:= $(STATIC)
 
-CXX_FLAGS 	:= -std=c++17  $(BUILD) $(LINKTYPE) -lglfw -lGL -lX11 -lpthread -ldl -lGLEW
+CXX_FLAGS 	:= -std=c++20  $(BUILD) $(LINKTYPE) -lglfw -lGL -lX11 -lpthread -ldl -lGLEW
 CXX			:= g++
 
 BIN			:= bin
@@ -67,11 +67,15 @@ headers: $(HEADERS)
 	$(CXX) $(HEADERS) $(CXX_FLAG)
 
 run:
+	make
 	$(BIN)/$(EXECUTABLE)
 clean:
 	$(CLEAN_COMMAND)
 clear:
 	$(CLEAN_COMMAND)
+
+build:
+	make && make run
 
 rebuild:
 	make clean

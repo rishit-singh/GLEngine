@@ -33,6 +33,16 @@ namespace GLEngine
 		}
 		
 		template<typename T>
+		static void SetRange(T& value, T min, T max)	//	Sets the value to max or min if it exceeds the range
+		{
+			if (value < min)
+				value = min;
+				
+			if (value > max)
+				value = max;	
+		}
+		
+		template<typename T>
 		static void PrintArray(T* array, unsigned int size)
 		{	
 			for (int x = 0; x < size; x++) 
@@ -56,6 +66,21 @@ namespace GLEngine
 			for (int x  = 0; x < size; x++)
 				std::cout << array.at(x)
 				<< '\n';
+		}
+		
+		template<typename T>
+		static void PrintVectorArray(std::vector<T> array, int newlineNumber)
+		{
+			unsigned int size = array.size(); 
+
+			for (int x  = 0; x < size; x++)
+			{
+				if (!(x % newlineNumber))
+					std::cout << "\n\n";
+				
+				std::cout << array.at(x)
+				<< '\n';	
+			}
 		}
 		
 		static void PrintVectorArray(std::vector<Vertex3Df> array)
@@ -120,13 +145,16 @@ namespace GLEngine
 		{
 			int size;
 
-			float* floatArray = new float[(size = vertexArray.size()) * 3]; 
+			float* floatArray = new float[(size = vertexArray.size()) * 5]; 
 		
 			for (int x = 0; x < size; x++)	
 			{
 				floatArray[x + ((size - 1) * x)] = vertexArray.at(x).Position.X;
 				floatArray[(x + ((size - 1) * x)) + 1] = vertexArray.at(x).Position.Y;
 				floatArray[(x + ((size - 1) * x)) + 2] = vertexArray.at(x).Position.Z;
+
+				floatArray[x + ((size - 1) * x) + 4] = vertexArray.at(x).TextureCoordinates.X;
+				floatArray[x + ((size - 1) * x) + 5] = vertexArray.at(x).TextureCoordinates.Y;
 			}
 
 			return floatArray;
@@ -145,6 +173,24 @@ namespace GLEngine
 
 			return floatArray;
 		}	
+
+		static std::vector<float> VertexVectorToFloatVector(std::vector<Vertex3Df> vertices)
+		{
+			int size = vertices.size();
+
+			std::vector<float> floatVector = std::vector<float>();
+
+			for (int x = 0; x < size; x++)
+			{
+				floatVector.push_back(vertices.at(x).Position.X);	
+				floatVector.push_back(vertices.at(x).Position.Y);	
+				floatVector.push_back(vertices.at(x).Position.Z);	
+				floatVector.push_back(vertices.at(x).TextureCoordinates.X);	
+				floatVector.push_back(vertices.at(x).TextureCoordinates.Y);	
+			}
+
+			return floatVector;
+		}
 
 		template<typename T>
 		static bool IsElement(T val, T* array, int size)
@@ -166,6 +212,12 @@ namespace GLEngine
 			return false;   
 		}
 
+		template<typename T>
+		std::vector<T> GetMaxArray(std::vector<T>& array, std::vector<T>& array1)	//	Returns the array with a greater size among the both provided arrays.
+		{
+			return ((array.size() > array1.size()) ? array : array1);
+		}
+
 		// static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
 		// {	
 		// 	float* array = new float[size * 3]; 
@@ -181,22 +233,61 @@ namespace GLEngine
 		// }
 
 		template<typename T>
+		static std::vector<T> ArrayToVector(T* array, unsigned int size)
+		{
+			std::vector<T> vectorTemp = std::vector<T>();
+
+			for (int x = 0; x < size; x++)
+				vectorTemp.push_back(array[x]);
+
+			return vectorTemp;
+		}
+
+		template<typename T>
+		static std::vector<T> GetRangeArray(T max)	//	Creates an array containing ints within the provided range
+		{
+			std::vector<T> NumberStack = std::vector<T>();
+
+			for (T x = 0; x < max; x++)
+				NumberStack.push_back(x);
+
+			return NumberStack;
+		}
+		
+		template<typename T>
+		static std::vector<T> GetRangeArray(T min, T max)	//	Creates an array containing ints within the provided range
+		{
+			std::vector<T> NumberStack = std::vector<T>();
+
+			if (min > max)
+				return NumberStack;	//	null array
+
+			for (T x = min; x < max; x++)
+				NumberStack.push_back(x);
+
+			return NumberStack;
+		}		
+		
+		template<typename T>
+		static std::vector<T> GetRangeArray(T min, T max, T increament)	//	Creates an array containing ints within the provided range with the difference of the provided increament variable
+		{
+			std::vector<T> NumberStack = std::vector<T>();
+
+			if (min > max)
+				return NumberStack;	//	null array
+
+			for (T x = min; x < max; x += increament)
+				NumberStack.push_back(x);
+
+			return NumberStack;
+		}
+
+		template<typename T>
 		static T* VectorToArray(std::vector<T> vectorArray)
 		{
 			T* Array = new T[vectorArray.size()];
 		}
 		
-		template<typename T>
-		static std::vector<T> CombineVectorArrays(std::vector<T> left, std::vector<T> right)	//	Combines to std::vector<T> into one.
-		{
-			int size = right.size();
-
-			for (int x = 0; x < size; x++)
-				left.push_back(right.at(x));
-
-			return left; 
-		}
-
 		static bool InRange(int num, int start, int end)
 		{
 			return (num >= start || num <= end);
@@ -219,6 +310,33 @@ namespace GLEngine
 			return DigitArray; 
 		}
 
+		template<typename T>
+		static std::vector<T> CombineVectorArrays(std::vector<T> array, std::vector<T> array1)
+		{
+			int sizeTemp = array1.size();
+			
+			for (int x = 0; x < sizeTemp; x++)
+				array.push_back(array1.at(x));
+
+			return array;
+		}
+
+		// template<typename T>
+		// static std::vector<T> GetCommonElements()
+		// {
+			
+		// }
+
+		// static std::vector<GLEngine::Point3Df> GetCommonElements()
+		// {
+		// 	std::vector<GLEngine::Point3Df> CommonElements = std::vector<GLEngine::Point3Df>();
+
+		// 	// for ()
+
+		// 	return CommonElements;
+		// }
+		
+
 		static String IntToString(int num)	//	Converts provided integer to string. 
 		{
 			String IntegerString = new char[MAX_STRING_LENGTH];
@@ -231,7 +349,6 @@ namespace GLEngine
 			for (int x = 0; x < size; x++)
 				strcat(IntegerString, &(charTemp[0] = (char)(DigitArray.at(x) + 48)));
 			
-
 			return IntegerString; 
 		}
 	};
