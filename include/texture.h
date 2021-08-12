@@ -6,7 +6,6 @@
 #include "shader.h"
 #include "window.h"
 
-
 namespace GLEngine
 {
 	enum TextureType
@@ -58,13 +57,15 @@ namespace GLEngine
 		void Bind();	//	Binds the texture to slot 0. 
 		void Bind(unsigned int);	//	Binds the texture to the specified texture slots 
 		void Unbind();	//	Unbinds the texture
-		bool SendToShader(Shader shader);	//	Sends the required texture data from current instance for raterization to the specified texture	
+		bool SendToShader(Shader* shader);	//	Sends the required texture data from current instance for raterization to the specified texture	
 
 		Texture() : ID(-1), TextureBuffer(nullptr), Properties(DefaultTextureProperties), FilePath(nullptr)
 		{
 		}
 	
 		Texture(char* filePath);	//	To load a texture from an image file 
+
+		Texture(const Texture& texture);	//	Copy constructor
 
 		~Texture()
 		{

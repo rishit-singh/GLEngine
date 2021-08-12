@@ -7,20 +7,20 @@ GLEngine::VertexBufferObject (*GLEngine::GLEObject::ObjectCreationFunctions[2])(
 	GLEngine::ShapeBufferGeneration::GenerateCuboid
 };
 
-// GLEngine::Shader GLEngine::DefaultShader = new GLEngine::Shader(GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]), GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]));
+// GLEngine::Shader* GLEngine::DefaultShader* = new GLEngine::Shader(GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]), GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]));
 
 // void GLEngine::Renderer::GLEngine::Mesh* mesh)
 // {		
-// 	glUseProgram(mesh->Meshshader.ShaderProgramID);
+// 	glUseProgram(mesh->Meshshader->Shader*ProgramID);
 
 // 	glBindVertexArray(mesh->VAO->VertexAttributes.at(mesh->VAO->VertexAttributes.size() - 1).ID); 
 
 // 	glDrawArrays(GL_TRIANGLES, 0, 3); 
 // }
 
-void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader shader)
+void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader)
 {
-	shader.Enable();
+	shader->Enable();
 	
 	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
@@ -28,22 +28,22 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader sha
 	glDrawElements(GL_TRIANGLES, vertexArrayObject->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
 }
 
-void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader shader, Texture texture)
+void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader, Texture* texture)
 {
-	texture.Bind();
-	texture.SendToShader(shader);
+	texture->Bind();
+	texture->SendToShader(shader);
 
-	shader.Enable();
+	shader->Enable();
 
 	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
 
 	glDrawElements(GL_TRIANGLES, vertexArrayObject->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
-	texture.Unbind();
+	texture->Unbind();
 }
 
-void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader shader)
+void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader* shader)
 {
 	int sizeTemp = vertexArrayObjects.size();
 
@@ -54,7 +54,7 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 		return;
 	}
 
-	shader.Enable();
+	shader->Enable();
 
 	for (int x = 0; x < sizeTemp; x++)
 	{
@@ -67,7 +67,7 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 	}
 }
 
-void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader shader, std::vector<Texture> textures)
+void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjects, Shader* shader, std::vector<Texture*> textures)
 {
 	int sizeTemp = vertexArrayObjects.size();
 
@@ -78,7 +78,7 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 		return;
 	}
 
-	shader.Enable();
+	shader->Enable();
 
 	for (int x = 0; x < sizeTemp; x++)
 	{
@@ -96,7 +96,7 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject object)
 
 		for (int x = 0; x < sizeTemp; x++)
 		{
-			object.MeshArray.at(y).MeshShader.Enable();
+			object.MeshArray.at(y).MeshShader->Enable();
 			object.MeshArray.at(y).MeshTexture->Bind();
 
 			object.MeshArray.at(y).VertexArrayObjects.at(x)->Bind(); 	
@@ -151,7 +151,7 @@ void GLEngine::Renderer::Render(GLEngine::Mesh mesh)
 {
 	int sizeTempY = mesh.VertexArrayObjects.size(), sizeTempX;
 
-	mesh.MeshShader.Enable();
+	mesh.MeshShader->Enable();
 
 	for (int y = 0; y < sizeTempY; y++)
 		for (int x = 0; x < mesh.VertexArrayObjects.at(y)->VertexBufferObjects.size(); x++)
@@ -187,7 +187,7 @@ GLEngine::GLEObject::GLEObject(GLEngine::Mesh mesh, GLEngine::GLEObject::GLEObje
 // 	this->MeshArray.push_back(this->ObjectMesh);
 // }
 
-// GLEngine::GLEObject::GLEObject(std::vector<Vertex3Df> vertexVectorArray, GLEngine::GLEObject::GLEObjectType type, GLEngine::Shader shader) : ID(AllocatedGLEObjects.size())
+// GLEngine::GLEObject::GLEObject(std::vector<Vertex3Df> vertexVectorArray, GLEngine::GLEObject::GLEObjectType type, GLEngine::Shader* shader) : ID(AllocatedGLEObjects.size())
 // {	
 // 	this->ObjectMesh = this->MeshArray.at(0);
 // 	// General::PrintVertexFloatArray(this->ObjectMesh->VertexMatrixArray, 9); s
@@ -206,7 +206,7 @@ GLEngine::GLEObject::GLEObject(std::vector<GLEngine::VertexBufferObject> vertexB
 	for (int x = 0; x < sizeTemp; x++)
 		this->MeshArray.push_back(Mesh(
 			new VertexArrayObject(vertexBufferObjects.at(x)),
-			Shader(
+			new Shader(
 				GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
 				GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]),
 				true
@@ -267,7 +267,7 @@ void GLEngine::GLEObject::CreateObject(std::vector<GLEngine::Vertex3Df> vertices
 {
 	Mesh mesh = Mesh();		//	mesh temp
 
-	Shader shader = Shader(
+	Shader* shader = new Shader(
 		GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
 		GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]),
 		true
@@ -318,9 +318,9 @@ void GLEngine::GLEObject::CreateObject(std::vector<GLEngine::Vertex3Df> vertices
 {	
 	GLEngine::Texture texture = GLEngine::Texture(GLEngine::DefaultPaths[GLEngine::Textures][0]);
 
-	GLEngine::Shader shader = GLEngine::Shader(GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]), GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]));
+	GLEngine::Shader* shader = new GLEngine::Shader(GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]), GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]));
 
-	this->MeshArray.push_back(GLEngine::Mesh(vertices, shader, &texture));
+	this->MeshArray.push_back(GLEngine::Mesh(vertices, shader, texture));
 	
 	this->Type = GLEngine::GLEObject::Unkown;
 
@@ -358,7 +358,7 @@ void GLEngine::GLEObject::CreateObject(GLEngine::Point3Df location, GLEngine::Po
 
 	GLEngine::Texture texture = GLEngine::Texture(GLEngine::DefaultPaths[GLEngine::Textures][0]);
 
-	this->MeshArray.push_back(Mesh(new VertexArrayObject(GLEngine::GLEObject::ObjectCreationFunctions[(int)type - 1](location, dimensions)), Shader(
+	this->MeshArray.push_back(Mesh(new VertexArrayObject(GLEngine::GLEObject::ObjectCreationFunctions[(int)type - 1](location, dimensions)), new Shader(
 			GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
 			GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader])
 		), &texture));
@@ -377,7 +377,8 @@ void GLEngine::GLEObject::CreateObject(GLEngine::Point3Df location, GLEngine::Po
 		return;
 	}
 
-	this->MeshArray.push_back(Mesh(new VertexArrayObject(GLEngine::GLEObject::ObjectCreationFunctions[(int)type - 1](location, dimensions)), Shader(
+	this->MeshArray.push_back(Mesh(new VertexArrayObject(GLEngine::GLEObject::ObjectCreationFunctions[(int)type - 1](location, dimensions)), 
+		new Shader(
 			GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]),
 			GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader])
 		), texture));
@@ -395,7 +396,7 @@ void GLEngine::GLEObject::Delete()
 	{
 		sizeTemp1 = this->MeshArray.at(x).VertexArrayObjects.size();
 
-		for (int y = 0; y < sizeTemp; y++)
+		for (int y = 0; y < sizeTemp1; y++)
 			delete this->MeshArray.at(x).VertexArrayObjects.at(y);
 	}
 }

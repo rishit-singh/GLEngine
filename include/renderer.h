@@ -7,7 +7,7 @@
 #include "tools.h"
 namespace GLEngine
 {
-	extern GLEngine::Shader DefaultShader;		//	Default shader. 
+	extern GLEngine::Shader* DefaultShader;		//	Default shader. 
 	extern GLEngine::Texture DefaultTexture;	//	Default texture.
 
 	struct MVPMatrixObject	//	Stores the Model, View and Projection matrices.
@@ -15,6 +15,10 @@ namespace GLEngine
 		glm::mat4 Model,	//	Model matrix
 				View,		//	View Matrix
 				Projection;	//	Projection matrix
+
+		MVPMatrixObject()
+		{
+		}
 
 		MVPMatrixObject(glm::mat4 model, glm::mat4 view, glm::mat4 projection) : Model(model), View(view), Projection(projection)
 		{
@@ -24,8 +28,8 @@ namespace GLEngine
 	class Mesh	//	3D/2D Mesh
 	{
 	private:
-		Texture MeshTextureRaw;
-		
+		Texture m_MeshTexture;
+
 		void DeleteVAOs();	//	Deletes all the allocated VAOs in the current mesh instance.
 
 	public:
@@ -35,7 +39,7 @@ namespace GLEngine
 		
 		std::vector<Vertex3Df> VertexMatrixVector;	// Stores the triangle vertex matrix of a maesh
 
-		Shader MeshShader;	// Shader object of the current mesh
+		Shader* MeshShader;	// Shader* object of the current mesh
 	
 		Texture* MeshTexture;	//	Texture to be mapped on the mesh objects.
 
@@ -50,21 +54,21 @@ namespace GLEngine
 
 		bool IsValid();
 		
-		Mesh() : VertexMatrixVector(std::vector<Vertex3Df>()), VertexMatrixArray(nullptr), MatrixSize(0), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr), MVPMatrix(nullptr)
+		Mesh() : VertexMatrixVector(std::vector<Vertex3Df>()), VertexMatrixArray(nullptr), MatrixSize(0), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 		}
 		
-		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr), MVPMatrix(nullptr)
+		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, vertexBufferSize, indexBufferArray, indexBufferSize));
-			
+
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 			
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
-		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr), MVPMatrix(nullptr)
+		Mesh(float* vertexBufferArray, unsigned int vertexBufferSize, unsigned int* indexBufferArray, unsigned int indexBufferSize, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), m_MeshTexture(*texture)
 		{
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, vertexBufferSize, indexBufferArray, indexBufferSize));
 	
@@ -76,7 +80,7 @@ namespace GLEngine
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
-		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr), MVPMatrix(nullptr)
+		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(nullptr)
 		{			
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, indexArray));
 
@@ -85,7 +89,7 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 		}
 
-		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(nullptr)
+		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
 		{
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, indexArray));
 
@@ -96,11 +100,13 @@ namespace GLEngine
 			
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+ 			this->MeshTexture = &this->m_MeshTexture;
+
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 
-		Mesh(VertexArrayObject* vertexArrayObject, Shader shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(nullptr)
+		Mesh(VertexArrayObject* vertexArrayObject, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
 		{
 			this->VertexArrayObjects.push_back(vertexArrayObject);	
 
@@ -108,11 +114,13 @@ namespace GLEngine
 			
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			// this->MeshTexture = &this->m_MeshTexture;
+
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 		
-		// Mesh(VertexArrayObject vertexArrayObject, MVPMatrix mvpMatrix Shader shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(mvpMatrix)
+		// Mesh(VertexArrayObject vertexArrayObject, MVPMatrix mvpMatrix Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(mvpMatrix)
 		// {
 		// 	this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			
@@ -123,7 +131,7 @@ namespace GLEngine
 		// }
 
 		Mesh(std::vector<Vertex3Df> vertexMatrixVector) : VertexMatrixVector(vertexMatrixVector), VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), 
-															MeshShader(Shader(GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::VertexShader]), GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::FragmentShader]))), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(new Texture(DefaultPaths[(int)Textures][0])), MVPMatrix(nullptr)
+															MeshShader(new Shader(GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::VertexShader]), GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::FragmentShader]))), VertexArrayObjects(std::vector<VertexArrayObject*>()), m_MeshTexture(Texture(DefaultPaths[(int)Textures][0]))
 		{
 			int size = vertexMatrixVector.size() * 3;	//	size temp
 
@@ -132,12 +140,14 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			this->MeshTexture = &this->m_MeshTexture;
+
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 
 		Mesh(std::vector<Vertex3Df> vertexMatrixVector, std::vector<unsigned int> indexArray) : VertexMatrixVector(vertexMatrixVector), VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), 
-															MeshShader(Shader(GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::VertexShader]), GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::FragmentShader]))), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(new Texture(DefaultPaths[(int)Textures][0])), MVPMatrix(nullptr)
+															MeshShader(new Shader(GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::VertexShader]), GLEngine::FileIO::Read(DefaultPaths[(int)Shaders][(int)Shader::FragmentShader]))), VertexArrayObjects(std::vector<VertexArrayObject*>()), m_MeshTexture(Texture(DefaultPaths[(int)Textures][0]))
 		{
 			int size = vertexMatrixVector.size() * 3;	//	size temp
 
@@ -146,11 +156,13 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			this->MeshTexture = &this->m_MeshTexture;
+
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 
-		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, Shader shader, Texture* texture) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(nullptr)
+		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, Shader* shader, Texture texture) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), m_MeshTexture(texture)
 		{
 			int size = vertexMatrixVector.size() * 3;	//	size temp
 
@@ -159,12 +171,14 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			this->MeshTexture = &this->m_MeshTexture;
+
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
 		}
 
 
-		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, std::vector<unsigned int> indexArray, Shader shader, Texture* texture) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), MVPMatrix(nullptr)
+		Mesh(std::vector<Vertex3Df>	vertexMatrixVector, std::vector<unsigned int> indexArray, Shader* shader, Texture texture) : VertexMatrixVector(vertexMatrixVector),  VertexMatrixArray(General::VertexVectorToFloatArray(vertexMatrixVector)), MatrixSize(vertexMatrixVector.size() * 3), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), m_MeshTexture(texture)
 		{
 			int size = vertexMatrixVector.size() * 3;	//	size temp
 
@@ -172,6 +186,8 @@ namespace GLEngine
 
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			this->MeshTexture = &this->m_MeshTexture;
 
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
@@ -224,8 +240,8 @@ namespace GLEngine
 		GLEObject(std::vector<GLEngine::VertexBufferObject>, std::vector<GLEngine::Texture*>);
 		GLEObject(std::vector<Vertex3Df>); 
 		GLEObject(std::vector<Vertex3Df>, GLEObjectType); 
-		GLEObject(std::vector<Vertex3Df>, GLEObjectType, Shader);
-		GLEObject(float*, int, Shader); 
+		GLEObject(std::vector<Vertex3Df>, GLEObjectType, Shader*);
+		GLEObject(float*, int, Shader*); 
 	
 		~GLEObject()
 		{
@@ -294,10 +310,10 @@ namespace GLEngine
 		
 		static void Render(GLEObject);	// Renders the provided GLEObject's mesh
 		static void Render(Mesh);	// Renders the provided Mesh
-		static void Render(VertexArrayObject*, Shader);	// Renders the psrovided Mesh
-		static void Render(VertexArrayObject*, Shader, Texture);	// Renders the provided Mesh, and maps its texture.
-		static void Render(std::vector<VertexArrayObject*>, Shader);	//	 Renders the provided vertex buffers.
-		static void Render(std::vector<VertexArrayObject*>, Shader, std::vector<Texture>);	//	 Renders the provided vertex buffers.
+		static void Render(VertexArrayObject*, Shader*);	// Renders the psrovided Mesh
+		static void Render(VertexArrayObject*, Shader*, Texture*);	// Renders the provided Mesh, and maps its texture.
+		static void Render(std::vector<VertexArrayObject*>, Shader*);	//	 Renders the provided vertex buffers.
+		static void Render(std::vector<VertexArrayObject*>, Shader*, std::vector<Texture*>);	//	 Renders the provided vertex buffers.
 	};
 
 	extern std::vector<GLEObject*> AllocatedGLEObjects;	//	Stores all the instances of GLEObject created durintg the execution

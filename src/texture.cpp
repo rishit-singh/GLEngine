@@ -3,6 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "external/stb_image.h"
 
+
 GLEngine::TexturePropertyObject GLEngine::DefaultTextureProperties = GLEngine::TexturePropertyObject(); 	
 
 GLEngine::Texture::Texture(char* filePath) : FilePath(filePath), Properties(DefaultTextureProperties)
@@ -12,6 +13,30 @@ GLEngine::Texture::Texture(char* filePath) : FilePath(filePath), Properties(Defa
 	this->TextureBuffer = stbi_load(this->FilePath, &this->Properties.Width, &this->Properties.Height, &this->Properties.BPP, 4); 	
 
     // std::wcout << "TextureBuffer:", this->TextureBuffer;
+
+	glGenTextures(1, &this->ID); //	Generates a texutre buffer
+	glBindTexture(GL_TEXTURE_2D, this->	ID); 	//	Binds the texture.
+
+	this->SetTextureParameters();
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->Properties.Width, this->Properties.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->TextureBuffer); 
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	if (this->TextureBuffer)
+		stbi_image_free(this->TextureBuffer);
+
+	this->Unbind(); 
+}
+
+GLEngine::Texture::Texture(const GLEngine::Texture& texture) : ID(texture.ID), Slot(texture.Slot)
+{
+	stbi_set_flip_vertically_on_load(1); 
+
+	this->Properties = texture.Properties;
+
+	this->TextureBuffer = stbi_load(texture.FilePath, &(this->Properties.Width), &this->Properties.Height, &this->Properties.BPP, 4); 	
+
+	// std::wcout << "TextureBuffer:", this->TextureBuffer;
 
 	glGenTextures(1, &this->ID); //	Generates a texutre buffer
 	glBindTexture(GL_TEXTURE_2D, this->	ID); 	//	Binds the texture.
@@ -52,11 +77,11 @@ void GLEngine::Texture::Unbind()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-bool GLEngine::Texture::SendToShader(GLEngine::Shader shader)
+bool GLEngine::Texture::SendToShader(GLEngine::Shader* shader)
 {
 	//	Sends the current bound texture slot as uTextureSlot to the provided shader
 	//	ToDo:	Pass texture slots
-	return shader.SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { (int)this->ID }, 1);
+	return shader->SetUniformValue<int>("uTextureSlot", GL_INT, new int[1] { (int)this->ID }, 1);
 }
 
 bool GLEngine::Texture::IsValid()
@@ -77,3 +102,4 @@ bool GLEngine::TexturePropertyObject::Verify()
 		this->Width > 0
 	);	
 }
+
