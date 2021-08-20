@@ -290,13 +290,21 @@ namespace GLEngine
 
 	struct Vertex3Df
 	{
-		Point3Df Position { 0.0f }; 
+	private:
+		std::vector<float> SingleBuffer;	//	Temp for storing the linear buffer of the current instance.
+
+	public:
+		Point3Df Position; 
+
+		Point3Df Normals;
+		
+		Point2Df TextureCoordinates;
 
 		Color VertexColor;
 
-		Point2Df TextureCoordinates;
+		std::vector<float> GetSingleBuffer();	//	Returns a single buffer containing the vertex components
 
-		Vertex3Df() : Position(Point3Df()), VertexColor(Color()), TextureCoordinates(Point2Df())
+		Vertex3Df() : Position(Point3Df()), VertexColor(Color()), TextureCoordinates(Point2Df()), Normals(Point3Df())
 		{
 		}
 
@@ -312,7 +320,15 @@ namespace GLEngine
 		{
 		}
 
+		Vertex3Df(Point3Df position, Point2Df textureCoordinates, Point3Df normals) : Position(position), VertexColor(Color()), TextureCoordinates(textureCoordinates), Normals(normals)
+		{
+		}
+
 		Vertex3Df(Point3Df position, Color color, Point2Df textureCoordinates) : Position(position), VertexColor(color), TextureCoordinates(textureCoordinates)
+		{
+		}
+
+		Vertex3Df(Point3Df position, Color color, Point2Df textureCoordinates, Point3Df normals) : Position(position), VertexColor(color), TextureCoordinates(textureCoordinates), Normals(normals)
 		{
 		}
 

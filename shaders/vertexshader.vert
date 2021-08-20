@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 uTextureCoordinates; 
-// layout (location = 2) in vec3 Color;
+// layout (location = 2) in vec3 Normals;
 
 out vec2 TextureCoordinates;  
 

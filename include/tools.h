@@ -4,6 +4,7 @@
 #define TOOLS_H
 
 #include <iostream>
+#include <initializer_list>
 #include "gltypes.h"
 #include "globjects.h"
 #include "globals.h"
@@ -58,15 +59,6 @@ namespace GLEngine
 				std::cout << array.at(x);
 		}
 
-		template<typename T>
-		static void PrintVectorArray(std::vector<T> array)
-		{
-			unsigned int size = array.size(); 
-
-			for (int x  = 0; x < size; x++)
-				std::cout << array.at(x)
-				<< '\n';
-		}
 		
 		template<typename T>
 		static void PrintVectorArray(std::vector<T> array, int newlineNumber)
@@ -79,7 +71,7 @@ namespace GLEngine
 					std::cout << "\n\n";
 				
 				std::cout << array.at(x)
-				<< '\n';	
+				<< ", ";	
 			}
 		}
 		
@@ -218,6 +210,12 @@ namespace GLEngine
 			return ((array.size() > array1.size()) ? array : array1);
 		}
 
+		template<typename T>
+		static void CopyArray(T* destination, T* source, unsigned int size)
+		{
+			for (int x = 0; x < size; x++)
+				destination[x] = source[x];
+		}
 		// static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
 		// {	
 		// 	float* array = new float[size * 3]; 
@@ -321,6 +319,23 @@ namespace GLEngine
 			return array;
 		}
 
+		template<typename T>
+		static std::vector<T> CombineVectorArrays(std::vector<std::vector<T>> vectorArrays)
+		{
+			std::vector<T> combinedArray = std::vector<T>();
+
+			int sizeTemp = vectorArrays.size(), sizeTemp1;
+			
+			for (int x = 0; x < sizeTemp; x++)
+			{
+				sizeTemp1 = vectorArrays.at(x).size();
+
+				for (int y = 0; y < sizeTemp1; y++)
+					combinedArray.push_back(vectorArrays.at(x).at(y));
+			}
+			return combinedArray;
+		}
+
 		// template<typename T>
 		// static std::vector<T> GetCommonElements()
 		// {
@@ -350,6 +365,73 @@ namespace GLEngine
 				strcat(IntegerString, &(charTemp[0] = (char)(DigitArray.at(x) + 48)));
 			
 			return IntegerString; 
+		}
+	};
+
+	class StringTools
+	{
+	public:
+		// static std::vector<char*> Split(char* str, char splitChar)
+		// {
+		// 	std::vector<char*> splittedStrings = std::vector<char*>();
+
+		// 	char* bufferTemp = new char[MAX_STRING_LENGTH];
+
+		// 	unsigned int size = strlen(str);
+
+		// 	for (int x = 0; x < size; x++)
+		// 	{
+		// 		if (str[x] == splitChar || x == (size - 1))
+		// 		{
+		// 			splittedStrings.push_back(strcat(new char[MAX_STRING_LENGTH], bufferTemp));
+
+		// 			memset(bufferTemp, 0, MAX_STRING_LENGTH);	//	nulls out the buffer
+
+		// 			continue;
+		// 		}
+
+		// 		bufferTemp[x] = str[x];
+		// 	}
+
+		// 	delete bufferTemp;
+
+		// 	return splittedStrings;
+		// }
+
+		static std::vector<std::string> Split(const char* str, char splitChar)
+		{
+			std::vector<std::string> splittedStrings = std::vector<std::string>();
+
+			std::string tempString;
+
+			unsigned int size = strlen(str);
+
+			for (int x = 0; x < size; x++)
+			{
+				if (str[x] == splitChar)
+				{
+					splittedStrings.push_back(tempString);
+
+					tempString.clear();
+
+					continue;
+				}
+				
+				if (x == (size - 1))
+				{
+					tempString += str[x];
+					
+					splittedStrings.push_back(tempString);
+
+					tempString.clear();
+
+					continue;
+				}				
+
+				tempString += str[x];
+			}
+
+			return splittedStrings;
 		}
 	};
 
@@ -419,7 +501,6 @@ namespace GLEngine
 		template<typename T>
 		static int BinarySearch(T val, std::vector<T> array)	//	Binary search implementation for std::vector<T>, 1 instruction slower than the traditional implementation
 		{
-
 			int start = 0, end = array.size(),  mid = start + end - 1 / 2;
 
 			if (start <= end)

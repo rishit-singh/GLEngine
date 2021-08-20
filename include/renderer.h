@@ -1,10 +1,14 @@
 #ifndef RENDERER_H
 
+#include <math.h>
 #include "window.h"
 #include "vertexarray.h"
 #include "texture.h"
 #include "fileio.h"
 #include "tools.h"
+
+#define DOUBLEPI M_PI * 2
+
 namespace GLEngine
 {
 	extern GLEngine::Shader* DefaultShader;		//	Default shader. 
@@ -28,6 +32,8 @@ namespace GLEngine
 	class Mesh	//	3D/2D Mesh
 	{
 	private:
+		Shader m_MeshShader;
+
 		Texture m_MeshTexture;
 
 		void DeleteVAOs();	//	Deletes all the allocated VAOs in the current mesh instance.
@@ -65,6 +71,9 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 			
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
@@ -76,7 +85,10 @@ namespace GLEngine
 				this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
-			
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	 For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
 			delete vertexBufferArray, indexBufferArray;
 		}
 		
@@ -85,8 +97,10 @@ namespace GLEngine
 			this->VertexArrayObjects.push_back(new VertexArrayObject(vertexBufferArray, indexArray));
 
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
-
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
 		}
 
 		Mesh(std::vector<float> vertexBufferArray, std::vector<unsigned int> indexArray, Shader* shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), MeshShader(shader), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture)
@@ -97,8 +111,10 @@ namespace GLEngine
 
 			// if (valid = this->MeshTexture->IsValid())
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
-			
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
  			this->MeshTexture = &this->m_MeshTexture;
 
@@ -110,11 +126,30 @@ namespace GLEngine
 		{
 			this->VertexArrayObjects.push_back(vertexArrayObject);	
 
-			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));	
-			
+			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
 			// this->MeshTexture = &this->m_MeshTexture;
+
+			this->MeshTexture->Bind();
+			this->MeshTexture->SendToShader(this->MeshShader);
+		}
+
+		Mesh(VertexArrayObject* vertexArrayObject, Shader shader, Texture* texture) : VertexMatrixVector(std::vector<Vertex3Df>()), VertexArrayObjects(std::vector<VertexArrayObject*>()), MeshTexture(texture), m_MeshShader(shader)
+		{
+			this->VertexArrayObjects.push_back(vertexArrayObject);	
+
+			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));	
+			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+
+			this->MeshShader = &this->m_MeshShader;
 
 			this->MeshTexture->Bind();
 			this->MeshTexture->SendToShader(this->MeshShader);
@@ -140,6 +175,9 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
 			this->MeshTexture = &this->m_MeshTexture;
 
 			this->MeshTexture->Bind();
@@ -156,6 +194,9 @@ namespace GLEngine
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
 			this->MeshTexture = &this->m_MeshTexture;
 
 			this->MeshTexture->Bind();
@@ -170,6 +211,9 @@ namespace GLEngine
 
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
 			this->MeshTexture = &this->m_MeshTexture;
 
@@ -186,6 +230,9 @@ namespace GLEngine
 
 			this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 2, GL_FLOAT, GL_FALSE));
 			this->VertexArrayObjects.back()->SetVertexAttributePointer();
+
+			// this->VertexArrayObjects.back()->AddVertexAttribute(VertexAttributeObject(this->VertexArrayObjects.back()->VertexAttributes.size(), 3, GL_FLOAT, GL_FALSE));	//	For normals
+			// this->VertexArrayObjects.back()->SetVertexAttributePointer();
 
 			this->MeshTexture = &this->m_MeshTexture;
 
@@ -274,7 +321,6 @@ namespace GLEngine
 
 				8, 9, 10,
 				10, 11, 8,
-
 				12, 13, 14,
 				14, 15, 12,
 

@@ -242,6 +242,16 @@ namespace GLEngine
 			}
 		}
 
+		// Shader(const Shader& shader)
+		// {
+			// this->ShaderIDs = new unsigned int[2];
+			
+			// General::CopyArray<unsigned int>(this->ShaderIDs, shader.ShaderIDs, 2);
+
+			// this->ShaderProgramID = shader.ShaderProgramID;
+
+		// }
+
 		~Shader()
 		{
 			this->DeleteShaders();

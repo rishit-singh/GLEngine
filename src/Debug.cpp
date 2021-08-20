@@ -16,4 +16,3 @@ void DebugTools::Debugger::Log(char** messages, int size)
 	for (int x = 0; x < size; x++)
 		std::cout << "\nDebug " << this->LogCount++ << ": " << messages[x] << '\n';
 }
-
