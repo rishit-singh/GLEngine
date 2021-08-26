@@ -112,8 +112,8 @@ int main()
 
 	// GLEngine::Shader shader = GLEngine::Shader(FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::VertexShader]), 
 	// 						FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::FragmentShader]), true);
-	GLEngine::Shader shader = GLEngine::Shader(FileIO::Read("/media/rishit/HDD0/src/repos/stable/GLEngine/shaders/vertexshader_ut.vert"), 
-							FileIO::Read("/media/rishit/HDD0/src/repos/stable/GLEngine/shaders/fragmentshader_ut.frag"), true);
+	GLEngine::Shader shader = GLEngine::Shader(FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/vertexshader_ut.vert"), 
+							FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/fragmentshader_ut.frag"), true);
 	
 	Debug->Log("Shader compiled: ", shader.Verify());
 
@@ -133,7 +133,7 @@ int main()
 
 	const int radius = 20.0f;
 	
-	std::vector<float> vb = OBJLoader::LoadOBJFile("/media/rishit/HDD0/src/repos/stable/GLEngine/resources/untitled.obj");
+	std::vector<float> vb = OBJLoader::LoadOBJFile("/media/rishit/HDD0/src/repos/GLEngine/resources/pickle.obj");
 
 	GLEObject object = GLEObject(Mesh(new VertexArrayObject(vb,
 	{
@@ -141,6 +141,10 @@ int main()
 	}), &shader, &texture1));
 
 	// General::PrintVectorArray<float>(vb, 5);
+	
+	// General::PrintVectorArsray(StringTools::QuickSplit("Hello World!", ' '));
+
+	Debug->Log("vb.size()", vb.size());
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{

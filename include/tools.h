@@ -5,6 +5,10 @@
 
 #include <iostream>
 #include <initializer_list>
+#include <iterator>
+#include <charconv>
+#include <string_view>
+#include <strstream>
 #include "gltypes.h"
 #include "globjects.h"
 #include "globals.h"
@@ -75,114 +79,22 @@ namespace GLEngine
 			}
 		}
 		
-		static void PrintVectorArray(std::vector<Vertex3Df> array)
-		{ 
-			for (int x = 0; x < array.size(); x++)
-				std::cout << '\n' << x 
-				<< "(" <<  array.at(x).Position.X
-				<< ", " << array.at(x).Position.Y
-				<< ", " << array.at(x).Position.Z
-				<< "); ";
-		}
+		static void PrintVectorArray(std::vector<Vertex3Df>);		//	Overload for Vertex3Df
+		static void PrintVectorArray(std::vector<std::string_view>);	//	Overload for std::string_view
 
-		static void PrintArray(Vertex3Df* array, unsigned int size)
-		{
-			for (int x = 0; x < size; x++)
-			{
-				std::cout << "Position: "<< array[x].Position.X << ", " << array[x].Position.Y
-						<< "\nColor: " << "R: " << array[x].VertexColor.R << "G: " << array[x].VertexColor.G  << "B: " << array[x].VertexColor.B << "A: " << array[x].VertexColor.A
-						<< '\n';	
-			}
-		}
-
-		static void PrintVertexFloatArray(float* array, unsigned int size)
-		{
-			for (int x = 0; x < size / 3; x++)
-				std::cout << '\n' << x << " (X: " << array[x]
-				 << ", Y: " <<  array[x + 1]
-				 << ", Z: " <<  array[x + 2] <<  "); ";
-		}
-
-		static float* PointVectorToFloatArray(std::vector<Point3Df> pointVector)	//	Converts an std::vector<Point3Df> to a T* (probably a float or an int	) array	
-		{
-			size_t VectorSize = pointVector.size();
-
-			float* Array = new float[VectorSize * 3];
-
-			for (int x = 0; x < VectorSize; x += 3)	//	Sets up the matrix rows
-			{
-				Array[x] = pointVector.at(x).X;  
-				Array[x + 1] = pointVector.at(x).Y;  
-				Array[x + 2] = pointVector.at(x).Z;
-			}
-
-			return Array;	
-		}
-
-		static float* PointArrayToFloatArray(Point3Df* pointArray, int size)	
-		{
-			float* floatArray = new float[size * 3]; 
-
-			for (int x = 0; x < size; x += 3)	
-			{
-				floatArray[x] = pointArray->X;
-				floatArray[x + 1] = pointArray->Y;
-				floatArray[x + 2] = pointArray->Z;
-			}
-
-			return floatArray;
-		}
-
-		static float* VertexVectorToFloatArray(std::vector<Vertex3Df> vertexArray)	
-		{
-			int size;
-
-			float* floatArray = new float[(size = vertexArray.size()) * 5]; 
+		static void PrintArray(Vertex3Df*, unsigned int);
 		
-			for (int x = 0; x < size; x++)	
-			{
-				floatArray[x + ((size - 1) * x)] = vertexArray.at(x).Position.X;
-				floatArray[(x + ((size - 1) * x)) + 1] = vertexArray.at(x).Position.Y;
-				floatArray[(x + ((size - 1) * x)) + 2] = vertexArray.at(x).Position.Z;
+		static void PrintVertexFloatArray(float*, unsigned int);
 
-				floatArray[x + ((size - 1) * x) + 4] = vertexArray.at(x).TextureCoordinates.X;
-				floatArray[x + ((size - 1) * x) + 5] = vertexArray.at(x).TextureCoordinates.Y;
-			}
+		static float* PointVectorToFloatArray(std::vector<Point3Df>);	//	Converts an std::vector<Point3Df> to a T* (probably a float or an int) array	
 
-			return floatArray;
-		}
+		static float* PointArrayToFloatArray(Point3Df*, int);
 
-		static float* VertexArrayToFloatArray(Vertex3Df* pointArray, int size)	
-		{
-			float* floatArray = new float[size * 3]; 
+		static float* VertexVectorToFloatArray(std::vector<Vertex3Df>);
 
-			for (int x = 0; x < size; x += 3)	
-			{
-				floatArray[x] = pointArray->Position.X;
-				floatArray[x + 1] = pointArray->Position.Y;
-				floatArray[x + 2] = pointArray->Position.Z;
-			}
+		static float* VertexArrayToFloatArray(Vertex3Df*, int);
 
-			return floatArray;
-		}	
-
-		static std::vector<float> VertexVectorToFloatVector(std::vector<Vertex3Df> vertices)
-		{
-			int size = vertices.size();
-
-			std::vector<float> floatVector = std::vector<float>();
-
-			for (int x = 0; x < size; x++)
-			{
-				floatVector.push_back(vertices.at(x).Position.X);	
-				floatVector.push_back(vertices.at(x).Position.Y);	
-				floatVector.push_back(vertices.at(x).Position.Z);	
-				floatVector.push_back(vertices.at(x).TextureCoordinates.X);	
-				floatVector.push_back(vertices.at(x).TextureCoordinates.Y);	
-			}
-
-			return floatVector;
-		}
+		static std::vector<float> VertexVectorToFloatVector(std::vector<Vertex3Df>);
 
 		template<typename T>
 		static bool IsElement(T val, T* array, int size)
@@ -216,6 +128,7 @@ namespace GLEngine
 			for (int x = 0; x < size; x++)
 				destination[x] = source[x];
 		}
+
 		// static float* VertexArrayToFloatArray(Vertex3Df* vertexArray, int size)
 		// {	
 		// 	float* array = new float[size * 3]; 
@@ -350,7 +263,9 @@ namespace GLEngine
 
 		// 	return CommonElements;
 		// }
-		
+
+		static int StringViewToInt(std::string_view);
+		static double StringViewToDouble(std::string_view);
 
 		static String IntToString(int num)	//	Converts provided integer to string. 
 		{
@@ -371,68 +286,9 @@ namespace GLEngine
 	class StringTools
 	{
 	public:
-		// static std::vector<char*> Split(char* str, char splitChar)
-		// {
-		// 	std::vector<char*> splittedStrings = std::vector<char*>();
-
-		// 	char* bufferTemp = new char[MAX_STRING_LENGTH];
-
-		// 	unsigned int size = strlen(str);
-
-		// 	for (int x = 0; x < size; x++)
-		// 	{
-		// 		if (str[x] == splitChar || x == (size - 1))
-		// 		{
-		// 			splittedStrings.push_back(strcat(new char[MAX_STRING_LENGTH], bufferTemp));
-
-		// 			memset(bufferTemp, 0, MAX_STRING_LENGTH);	//	nulls out the buffer
-
-		// 			continue;
-		// 		}
-
-		// 		bufferTemp[x] = str[x];
-		// 	}
-
-		// 	delete bufferTemp;
-
-		// 	return splittedStrings;
-		// }
-
-		static std::vector<std::string> Split(const char* str, char splitChar)
-		{
-			std::vector<std::string> splittedStrings = std::vector<std::string>();
-
-			std::string tempString;
-
-			unsigned int size = strlen(str);
-
-			for (int x = 0; x < size; x++)
-			{
-				if (str[x] == splitChar)
-				{
-					splittedStrings.push_back(tempString);
-
-					tempString.clear();
-
-					continue;
-				}
-				
-				if (x == (size - 1))
-				{
-					tempString += str[x];
-					
-					splittedStrings.push_back(tempString);
-
-					tempString.clear();
-
-					continue;
-				}				
-
-				tempString += str[x];
-			}
-
-			return splittedStrings;
-		}
+		static std::vector<std::string> Split(const char*, char);
+		static std::vector<std::string_view> QuickSplit(std::string&, char);	//	A faster vesion of Split(const char* , char)
+		static std::vector<std::string_view> QuickSplit(std::string_view&, char);	//	A faster vesion of Split(const char* , char)
 	};
 
 	class Algorithms 
