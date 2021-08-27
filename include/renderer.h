@@ -29,6 +29,15 @@ namespace GLEngine
 		}
 	};
 
+
+	// class Transform
+	// {
+	// public:
+	// 	MVPMatrixObject* MVPMatrix;	//	MVPMatrixObject
+
+
+	// };
+
 	class Mesh	//	3D/2D Mesh
 	{
 	private:
@@ -355,11 +364,14 @@ namespace GLEngine
 		static bool GLLoop(Window, Mesh*);	//	 Runs the OpenGL loop for the provided Mesh.
 		
 		static void Render(GLEObject);	// Renders the provided GLEObject's mesh
+		static void Render(GLEObject, bool);	// Renders the provided GLEObject's mesh, indexed or otherwise	
 		static void Render(Mesh);	// Renders the provided Mesh
 		static void Render(VertexArrayObject*, Shader*);	// Renders the psrovided Mesh
 		static void Render(VertexArrayObject*, Shader*, Texture*);	// Renders the provided Mesh, and maps its texture.
 		static void Render(std::vector<VertexArrayObject*>, Shader*);	//	 Renders the provided vertex buffers.
 		static void Render(std::vector<VertexArrayObject*>, Shader*, std::vector<Texture*>);	//	 Renders the provided vertex buffers.
+
+		static void RenderNonIndexed(GLEObject);	//	Renders a non-indexed buffer.
 	};
 
 	extern std::vector<GLEObject*> AllocatedGLEObjects;	//	Stores all the instances of GLEObject created durintg the execution

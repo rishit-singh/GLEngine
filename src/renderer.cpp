@@ -147,6 +147,32 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject object)
 // }
 
 
+void GLEngine::Renderer::RenderNonIndexed(GLEObject object)
+{
+	unsigned int meshArraySize = object.MeshArray.size(),
+				vertexArraySize;
+
+	
+	for (int x = 0; x < meshArraySize; x++)
+	{
+		GLEngine::Mesh& mesh = object.MeshArray.at(x);
+
+		vertexArraySize = mesh.VertexArrayObjects.size();
+		
+		mesh.MeshShader->Enable();
+		mesh.MeshTexture->Bind();
+
+		for (int y = 0; y < vertexArraySize; y++)
+		{
+			GLEngine::VertexArrayObject*& vao = mesh.VertexArrayObjects.at(y);		
+
+			vao->VertexBufferObjects.back().Bind(GLEngine::VertexBuffer);
+
+			glDrawArrays(GL_TRIANGLES, 0, vao->VertexBufferObjects.back().VertexArraySize);
+		}
+	} 
+}
+
 void GLEngine::Renderer::Render(GLEngine::Mesh mesh)
 {
 	int sizeTempY = mesh.VertexArrayObjects.size(), sizeTempX;
@@ -162,6 +188,14 @@ void GLEngine::Renderer::Render(GLEngine::Mesh mesh)
 			glDrawElements(GL_TRIANGLES, mesh.VertexArrayObjects.back()->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr);
 		}
 	// mesh.VertexArrayObjects.back()->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
+}
+
+void GLEngine::Renderer::Render(GLEngine::GLEObject object, bool indexed)
+{
+	if (indexed)
+		GLEngine::Renderer::Render(object);
+	else 
+		GLEngine::Renderer::RenderNonIndexed(object);
 }
 
 // GLEngine::GLEObject::GLEObject() : ID(GLEngine::AllocatedGLEObjects.size()), Type(GLEngine::GLEObject::Null), ObjectMesh(Mesh()), MeshArray(std::vector<Mesh>())

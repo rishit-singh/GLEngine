@@ -14,5 +14,6 @@ void main()
 {
 	// vec4 TextureColor = texture(uTextureSlot, TextureCoordinates);
 
-	FragmentColor = vec4(0.18, 0.18, 0.18, 1);
+	FragmentColor = vec4(0, 0.68, 1, 1);
+	// FragmentColor = vec4(1.0, 1.0, 1.0, 1.0);
 }	
