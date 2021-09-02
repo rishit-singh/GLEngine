@@ -7,6 +7,10 @@ GLEngine::VertexBufferObject (*GLEngine::GLEObject::ObjectCreationFunctions[2])(
 	GLEngine::ShapeBufferGeneration::GenerateCuboid
 };
 
+GLEngine::Blender GLEngine::DefaultBlender = GLEngine::Blender();
+
+GLEngine::WorldSpace GLEngine::DefaultWorldSpace = GLEngine::WorldSpace();
+
 // GLEngine::Shader* GLEngine::DefaultShader* = new GLEngine::Shader(GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::VertexShader]), GLEngine::FileIO::Read(GLEngine::DefaultPaths[GLEngine::Shaders][GLEngine::Shader::FragmentShader]));
 
 // void GLEngine::Renderer::GLEngine::Mesh* mesh)
@@ -17,6 +21,7 @@ GLEngine::VertexBufferObject (*GLEngine::GLEObject::ObjectCreationFunctions[2])(
 
 // 	glDrawArrays(GL_TRIANGLES, 0, 3); 
 // }
+
 
 void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* shader)
 {
@@ -38,8 +43,8 @@ void GLEngine::Renderer::Render(VertexArrayObject* vertexArrayObject, Shader* sh
 	vertexArrayObject->Bind();
 	vertexArrayObject->VertexBufferObjects.back().Bind(GLEngine::IndexBuffer);
 
-
 	glDrawElements(GL_TRIANGLES, vertexArrayObject->VertexBufferObjects.back().IndexArraySize, GL_UNSIGNED_INT, nullptr); 
+
 	texture->Unbind();
 }
 
@@ -81,9 +86,7 @@ void GLEngine::Renderer::Render(std::vector<VertexArrayObject*> vertexArrayObjec
 	shader->Enable();
 
 	for (int x = 0; x < sizeTemp; x++)
-	{
 		GLEngine::Renderer::Render(vertexArrayObjects.at(x), shader, textures.at(x));
-	}
 }
 
 void GLEngine::Renderer::Render(GLEngine::GLEObject object)
@@ -93,6 +96,8 @@ void GLEngine::Renderer::Render(GLEngine::GLEObject object)
 	for (int y = 0; y < sizeTemp1; y++)
 	{
 		sizeTemp = object.MeshArray.at(y).VertexArrayObjects.size();
+
+		// object.MeshArray.at(y).SetMVP();
 
 		for (int x = 0; x < sizeTemp; x++)
 		{
@@ -156,9 +161,9 @@ void GLEngine::Renderer::RenderNonIndexed(GLEObject object)
 	for (int x = 0; x < meshArraySize; x++)
 	{
 		GLEngine::Mesh& mesh = object.MeshArray.at(x);
-
+	
 		vertexArraySize = mesh.VertexArrayObjects.size();
-		
+	
 		mesh.MeshShader->Enable();
 		mesh.MeshTexture->Bind();
 
@@ -255,6 +260,15 @@ GLEngine::GLEObject::GLEObject(std::vector<GLEngine::VertexBufferObject> vertexB
 void GLEngine::Mesh::Update(unsigned int id)
 {
 	this->VertexArrayObjects.at(id)->SetVertexAttributePointer();
+}
+
+void GLEngine::Mesh::SetMVP()
+{
+	glm::mat4 model = *this->MeshTransform.GetModelMatrix();
+
+	this->MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(model), GL_FLOAT, 4);
+	this->MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(GLEngine::DefaultWorldSpace.View), GL_FLOAT, 4);
+	this->MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(GLEngine::DefaultWorldSpace.Projection), GL_FLOAT, 4);
 }
 
 bool GLEngine::Mesh::AddVertexArrayObject(VertexArrayObject* vertexArrayObject)

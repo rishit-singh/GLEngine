@@ -5,6 +5,7 @@
 #include "globjects.h"
 #include "globals.h"
 #include "fileio.h"
+// #include "transform.h"
 #include <unordered_map>
 #include <any> 
 #include <GL/glew.h>
@@ -40,6 +41,8 @@ namespace GLEngine
 		bool Verify();	// Checks if the current instance of the Shader is eligible to get compiled and linked to the final shader program
 		void CheckErrors(unsigned int, GLenum); // Checks for compiling and linking errors
 
+		// void SetMVP(Transform);	//	Sets the model view projection uniforms
+		
 		unsigned int* Compile();	//	Compiles all the shaders at once if eligible
 		unsigned int Link();	//	Links the compiled shaders into one shader program						
 

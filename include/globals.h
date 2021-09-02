@@ -1,8 +1,12 @@
-#pragma once
+#pragma once 
 
 #define GLOBALS_H
 
 #include "Debug.h"
+
+#include "external/glm/glm.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #define ASSERT(x) if (!(x)) raise(SIGINT);
 #define GLCall(x) GLClearError();\
@@ -23,3 +27,4 @@ namespace GLEngine
 
 	extern char DefaultPaths[2][2][1024];	//	Default paths for the engine resources
 };
+

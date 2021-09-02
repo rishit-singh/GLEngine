@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <math.h>
 #include "glengine.h"
-#include "blending.h"
 #include "fileio.h"
 #include "objloader.h"
 
@@ -106,29 +105,17 @@ int main()
 
 	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_ERROR, 0, GL_DEBUG_SEVERITY_MEDIUM, -1, "Debug context check.");
 
-	Blender blender = Blender();
-
-	blender.Enable(); 
-	blender.ApplyBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	DefaultBlender.Enable(); 
+	DefaultBlender.ApplyBlend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// GLEngine::Shader shader = GLEngine::Shader(FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::VertexShader]), 
 	// 						FileIO::Read(GLEngine::DefaultPaths[(int)GLEngine::Shaders][(int)Shader::FragmentShader]), true);
 	GLEngine::Shader shader = GLEngine::Shader(FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/vertexshader_ut.vert"), 
 							FileIO::Read("/media/rishit/HDD0/src/repos/GLEngine/shaders/fragmentshader_ut.frag"), true);
 	
+	Texture texture = Texture(DefaultPaths[Textures][0]);
+
 	Debug->Log("Shader compiled: ", shader.Verify());
-
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"), texture1 = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"),
-	face = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/front.png"),
-	top = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/top.png"),
-	left = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/left.png"),
-	right = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/right.png"),
-	back = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/back.png"),
-	torso = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/torso.png"),
-	arm = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/arm.png"),
-	leg = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/leg.png");
-
-	std::vector<float> CuboidVertices = ShapeBufferGeneration::GenerateCuboidVertices({ 0.0f, 1.0f, 0.0f }, { 0.15f, 0.15f, 0.15f });
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -136,9 +123,15 @@ int main()
 	
 	std::vector<float> vb = OBJLoader::LoadOBJFile("/media/rishit/HDD0/src/repos/GLEngine/resources/torus.obj");
 
-	GLEObject object = GLEObject(Mesh(new VertexArrayObject(vb, { 0 }), &shader, &texture1));
+	GLEObject object = GLEObject(Mesh(new VertexArrayObject(vb, { 0 }), &shader, &texture));
 
 	Debug->Log("vb.size()", vb.size());
+
+	Transform transform = Transform();
+	
+	transform = Transform({ 0.1f, 0.0f, -2.0f });
+	
+	// transform.Rotate(45, { 0.0f, 1.0f, 0.0f });
 
 	while (!glfwWindowShouldClose(window.GLWindow))
 	{
@@ -149,17 +142,19 @@ int main()
 		glClearColor(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B, window.BackgroundColor.A);  
 		glfwSwapInterval(1);
 		
-		object.ObjectMesh.MVPMatrix = new MVPMatrixObject(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
-		object.ObjectMesh.MVPMatrix->Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
-		object.ObjectMesh.MVPMatrix->View = GLEngine::WindowCamera.GetViewMatrix();
-		
-		object.ObjectMesh.MVPMatrix->Model = glm::translate(object.ObjectMesh.MVPMatrix->Model, glm::vec3(0.1f, 0.0f, -2.0f));
-		object.ObjectMesh.MVPMatrix->Model = glm::rotate(object.ObjectMesh.MVPMatrix->Model, (float)glfwGetTime() * glm::radians(80.0f), glm::vec3(1.0f, 0.7f, 0.0f));
+		DefaultWorldSpace.Projection = glm::perspective(glm::radians(WindowCamera.FOV), (float)1280 / (float)720, 0.1f, 100.0f);
+		DefaultWorldSpace.View = WindowCamera.GetViewMatrix();
+	
+		object.ObjectMesh.MeshTransform.Rotate(1.0f * glfwGetTime(), { 1.0f, 1.0f, 0.0f });
+	
+		object.ObjectMesh.SetMVP();
 
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(object.ObjectMesh.MVPMatrix->Model), GL_FLOAT, 4);
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(object.ObjectMesh.MVPMatrix->View), GL_FLOAT, 4);
-		object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(object.ObjectMesh.MVPMatrix->Projection), GL_FLOAT, 4);
-			
+		// glm::mat4 model = *object.ObjectMesh.MeshTransform.GetModelMatrix();
+
+		// object.ObjectMesh.MeshShader->SetSquareMatrix<float>("model", glm::value_ptr(model), GL_FLOAT, 4);
+		// object.ObjectMesh.MeshShader->SetSquareMatrix<float>("view", glm::value_ptr(DefaultWorldSpace.View), GL_FLOAT, 4);
+		// object.ObjectMesh.MeshShader->SetSquareMatrix<float>("projection", glm::value_ptr(DefaultWorldSpace.Projection), GL_FLOAT, 4);
+		
 		Renderer::Render(object, 0);
 
 		glfwSwapBuffers(window.GLWindow);

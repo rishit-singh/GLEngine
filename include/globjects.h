@@ -1,6 +1,6 @@
 #pragma once
 
-#define GLEOBJECTS_H 
+#define GLOBJECTS_H
 
 #include <iostream>
 #include <vector>
@@ -9,9 +9,6 @@
 #include <GLFW/glfw3.h> 
 #include "gltypes.h"
 #include "Debug.h"
-#include "external/glm/glm.hpp"
-#include "external/glm/gtc/matrix_transform.hpp"
-#include "external/glm/gtc/type_ptr.hpp"
 
 using namespace DebugTools;
 
@@ -341,4 +338,3 @@ namespace GLEngine
 }
 
 // std::vector<GLEngine::Window*> AllocatedWindows = std::vector<GLEngine::Window*>();	// Execution Data
-	

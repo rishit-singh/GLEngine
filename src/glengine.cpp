@@ -31,7 +31,7 @@ bool GLEngine::SetupGLEW()
 			throw new LibraryInitializationError("GLEW");
 	}
 	catch (const LibraryInitializationError& e)
-	{	
+	{
 		std::cout << "\nGLEW initialization error.";
 
 		return false; 
@@ -42,6 +42,7 @@ bool GLEngine::SetupGLEW()
 
 bool GLEngine::SetupGLFW()
 {
+
 	if (!glfwInit())
 	{
 		std::cout << "\nGLFW initialization error.";
