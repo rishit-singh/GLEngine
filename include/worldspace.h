@@ -3,7 +3,7 @@
 
 namespace GLEngine
 {
-		struct WorldSpace
+	struct WorldSpace
 	{
 		glm::mat4 View { glm::mat4(1.0f) }, 
 			Projection { glm::mat4(1.0f) };
