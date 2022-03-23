@@ -115,15 +115,15 @@ int main()
 	
 	Debug->Log("Shader compiled: ", shader.Verify());
 
-	Texture texture = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/doomguy.png"), texture1 = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/cobblestone.png"),
-	face = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/front.png"),
-	top = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/top.png"),
-	left = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/left.png"),
-	right = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/right.png"),
-	back = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/back.png"),
-	torso = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/torso.png"),
-	arm = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/arm.png"),
-	leg = Texture("/media/rishit/HDD0/src/repos/GLEngine/resources/steve/leg.png");
+	Texture texture = Texture("resources/doomguy.png"), texture1 = Texture("resources/cobblestone.png"),
+	face = Texture("resources/steve/front.png"),
+	top = Texture("resources/steve/top.png"),
+	left = Texture("resources/steve/left.png"),
+	right = Texture("resources/steve/right.png"),
+	back = Texture("resources/steve/back.png"),
+	torso = Texture("resources/steve/torso.png"),
+	arm = Texture("resources/steve/arm.png"),
+	leg = Texture("resources/steve/leg.png");
 
 	std::vector<float> CuboidVertices = ShapeBufferGeneration::GenerateCuboidVertices({ 0.0f, 1.0f, 0.0f }, { 0.15f, 0.15f, 0.15f });
 	
